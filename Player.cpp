@@ -33,7 +33,7 @@ void Player::initWeapon()
 {
 	// laser 1 - blaster
 	this->laser1Texture["WEAPON"] = new Texture();
-	this->laser1Texture["WEAPON"]->loadFromFile("Textures/Lasers/16.png");
+	this->laser1Texture["WEAPON"]->loadFromFile("Textures/Lasers/20.png");
 }
 
 
@@ -45,6 +45,7 @@ void Player::initSprite()
 	this->sprite.setTextureRect(currentFrame);
 	this->sprite.setScale(3.f, 3.f);
 
+	this->sprite.setPosition(960,540);
 }
 
 void Player::initAnimations()
@@ -83,10 +84,10 @@ Player::~Player()
 		delete i.second;
 	}
 
-	for (auto& i : this->laser1)
+	/*for (auto& i : this->laser1)
 	{
 		delete i;
-	}
+	}*/
 }
 
 // Accessors
@@ -177,13 +178,13 @@ void Player::updateMovement()
 	{
 		this->move(-1.f, 0.f);
 		this->animState = PLAYER_ANIMATION_STATES::MOVING_LEFT;
-		cout << "A"; // debugging purposes for input
+		cout << "\r\t\t\tA"; // debugging purposes for input
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) // Right
 	{
 		this->move(1.f, 0.f);
 		this->animState = PLAYER_ANIMATION_STATES::MOVING_RIGHT;
-		cout << "D";
+		cout << "\r\t\t\tD";
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) // Jump
 	{ // STILL WORKING ON THE JUMPING	
@@ -222,17 +223,17 @@ void Player::updateWeapon(char Dirx, float widthoffset, float scalex)
 	
 }
 
-void Player::updateWeaponv2()
+void Player::updateWeaponv2() //  SHOOOOOT
 {
 	if (Mouse::isButtonPressed(Mouse::Left)) // left click to shoot
 	{
-		this->laser1.push_back(new Weapon(this->laser1Texture["WEAPON"], // texture
+		this->laser1.push_back(Weapon(this->laser1Texture["WEAPON"], // texture
 		this->playerCenter, // position of player
 		Vector2f(1.f, 0.f), // direction
 		5,  // velocity
 		0.5f // acceleration
 		));
-		cout << "V";
+		cout << "\r\t\t\t\tSHOT";
 	}
 }
 
@@ -253,7 +254,7 @@ void Player::updateWeaponInput()
 	updateWeaponv2();
 	for (size_t i = 0; i < this->laser1.size(); i++)
 	{
-		this->laser1[i]->update();
+		this->laser1[i].update();
 	}
 }
 
@@ -328,7 +329,7 @@ void Player::updateAnimations()
 		this->animationTimer.restart();
 }
 
-void Player::update()
+void Player::update(const float& dt)
 {
 	this->updateMovement();
 	this->updateGUI();
@@ -338,20 +339,18 @@ void Player::update()
 	this->updateWeaponInput();
 }
 
-void Player::render(sf::RenderTarget& target)
+void Player::render(sf::RenderTarget* target)
 {
-	
-
 	// render laser
 	for (size_t i = 0; i < this->laser1.size(); i++)
 	{
-		this->laser1[i]->render(target);
+		this->laser1[i].render(target);
 	}
 
 	// render player -> called in game class
-	target.draw(this->sprite);
+	target->draw(this->sprite);
 
 	// RenderGUI
-	target.draw(this->playerHpBarBack);
-	target.draw(this->playerHpBar);
+	target->draw(this->playerHpBarBack);
+	target->draw(this->playerHpBar);
 }

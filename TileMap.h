@@ -1,18 +1,18 @@
 #pragma once
-
 #include "Tile.h"
-#include <vector>
 
 class TileMap
 {
 private:
-	std::vector< std::vector<Tile*> > tiles;
+	float gridSizeF;
+	unsigned gridSizeU;
+	sf::Vector2u maxSize;
+	unsigned layers;
+	vector< vector< vector <Tile> > > map; // x y z
 
 public:
-
-	TileMap();
-
-	~TileMap();
+	TileMap(float gridSize, unsigned width, unsigned height);
+	virtual ~TileMap();
 
 	//Functions
 	void addTile(unsigned x, unsigned y);
@@ -23,6 +23,6 @@ public:
 	void update();
 
 	// render
-	void render();
+	void render(sf::RenderTarget& target);
 };
 

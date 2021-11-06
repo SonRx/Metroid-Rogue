@@ -7,16 +7,12 @@ int main()
 
 	Game game; // Start the game object
 
-	while (game.getWindow().isOpen()) // modify soon to create a main menu.
-	{ // create object -> update it, render it. 
-		game.update(); // see game.cpp for all updates
-		game.render(); // see game.cpp for all renders
-	}
+	game.runApplication();
 
-	//EOA
-	return 0;
+	return 0; //EOA
 }
 
 /* controls schemes for now:
-* Movement: WASD, Space
+* Movement:				WASD, Space
+* Shoot:				Left Click
 */

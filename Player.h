@@ -1,11 +1,11 @@
 #pragma once
-#include "stdafx.h"
+#include "Entity.h"
 #include "Weapon.h"
-using namespace std;
 // used in updateMovement() and updateAnimations()
 enum PLAYER_ANIMATION_STATES { IDLE = 0, MOVING_LEFT, MOVING_RIGHT, JUMPING, FALLING };
 
-class Player
+class Player :
+	public Entity
 {
 private:
 	//Player sprite, texture, hitbox
@@ -16,7 +16,7 @@ private:
 
 	// PLAYER WEAPONS
 	map<string, Texture*> laser1Texture;
-	vector<Weapon*> laser1;
+	vector<Weapon> laser1;
 
 	// Player GUI
 	RectangleShape playerHpBar;
@@ -60,14 +60,11 @@ public:
 	Player(); // constructor // go to player.cpp for the implemenations of the init variables.
 	virtual ~Player(); // destructor
 
-
-
-
 	//Accessors
 	const bool& getAnimSwitch();
 	const sf::Vector2f getPosition() const { return this->sprite.getPosition(); }
 	const sf::FloatRect getGlobalBounds() const;
-	std::vector<Weapon*> getLasers() { return this->laser1; }
+	std::vector<Weapon>& getLasers() { return this->laser1; }
 
 
 
@@ -87,11 +84,11 @@ public:
 	void updateWeaponInput();
 	void updateGUI();
 	void updateAnimations();
-	void update();
+	void update(const float& dt);
 
 	// Render
 	//void renderGUI();
-	void render(sf::RenderTarget& target);
+	void render(sf::RenderTarget* target);
 };
 
 

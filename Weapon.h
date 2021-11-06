@@ -1,7 +1,4 @@
 #pragma once
-#include "stdafx.h"
-#include <iostream>
-#include <vector>
 
 class Weapon
 {
@@ -35,6 +32,6 @@ public:
 	// Functions
 
 	void update();
-	void render(RenderTarget &target);
+	void render(RenderTarget* target);
 };
 

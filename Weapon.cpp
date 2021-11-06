@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Weapon.h"
 /*
 Weapon::Weapon(Texture* texture, Vector2f position, Vector2f maxVelocity)
@@ -63,7 +64,7 @@ void Weapon::update()
 	this->sprite.move(this->curVelocity);
 }
 
-void Weapon::render(RenderTarget& target)
+void Weapon::render(RenderTarget* target)
 {
-	target.draw(this->sprite);
+	target->draw(this->sprite);
 }
