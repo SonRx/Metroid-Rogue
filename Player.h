@@ -2,7 +2,7 @@
 #include "Entity.h"
 #include "Weapon.h"
 // used in updateMovement() and updateAnimations()
-enum PLAYER_ANIMATION_STATES { IDLE = 0, MOVING_LEFT, MOVING_RIGHT, JUMPING, FALLING, RUNNING};
+enum PLAYER_ANIMATION_STATES { IDLE, JUMPING, FALLING, RUNNING};
 //leaving MOVING_LEFT and MOVING_RIGHT for code compatability, recomended to use RUNNING now and this->dir to indicate direction
 
 enum PLAYER_DIRECTION { LEFT = -1, RIGHT = 1 };
@@ -92,7 +92,6 @@ public:
 	void updatePhysics();
 	void updateMovement();
 	void updatePlayerCenter();
-	void updateWeapon(char Dirx, float widthoffset, float scalex);
 	void updateWeaponv2();
 	void updateWeaponInput();
 	void updateGUI();

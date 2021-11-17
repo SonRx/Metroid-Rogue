@@ -191,26 +191,32 @@ void Player::updateMovement()
 
 	this->animState = PLAYER_ANIMATION_STATES::IDLE;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) // Left
-	{
-		this->direction = PLAYER_DIRECTION::LEFT;//-1
-		
-		this->moveHori(this->direction);
+	if (!(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) // Left
+		{
+			this->direction = PLAYER_DIRECTION::LEFT;//-1
 
-		if(this->animState != PLAYER_ANIMATION_STATES::JUMPING)
-			this->animState = PLAYER_ANIMATION_STATES::RUNNING;
+			this->moveHori(this->direction);
 
-		cout << "A"; // debugging purposes for input
-	} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) // Right
-	{
-		this->direction =  PLAYER_DIRECTION::RIGHT;//1
-		
-		this->moveHori(this->direction);
+			if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
+				this->animState = PLAYER_ANIMATION_STATES::RUNNING;
 
-		if(this->animState != PLAYER_ANIMATION_STATES::JUMPING)
-			this->animState = PLAYER_ANIMATION_STATES::RUNNING;
+			cout << "A"; // debugging purposes for input
+		} 
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) // Right
+		{
+			this->direction = PLAYER_DIRECTION::RIGHT;//1
 
-		cout << "D";
+			this->moveHori(this->direction);
+
+			if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
+				this->animState = PLAYER_ANIMATION_STATES::RUNNING;
+
+			cout << "D";
+		}
+	}
+	else {
+		cout << "AD";
 	}
 
 	if (this->isOnGround) {
@@ -239,29 +245,6 @@ void Player::updatePlayerCenter()
 			this->sprite.getPosition().y + this->sprite.getGlobalBounds().height / 3.4);
 }
 
-void Player::updateWeapon(char Dirx, float widthoffset, float scalex)
-{
-	//if (Mouse::isButtonPressed(Mouse::Left)) // left click to shoot
-	//{
-	//	this->laser1.push_back(new Weapon(this->laser1Texture["WEAPON"],
-	//		this->sprite.getPosition().x + widthoffset,
-	//		this->sprite.getPosition().y + this->sprite.getGlobalBounds().height / 3.5f,
-	//		Dirx, 0, 5, scalex, .4f));
-	//	cout << "V";
-	//}
-
-	//if (Mouse::isButtonPressed(Mouse::Left)) // left click to shoot
-	//{
-	//	this->laser1.push_back(new Weapon(this->laser1Texture["WEAPON"],
-	//		this->sprite.getPosition().x + this->sprite.getGlobalBounds().width / 2.0f,
-	//		this->sprite.getPosition().y + this->sprite.getGlobalBounds().height / 3.4f,
-	//		1.f, 0.f, 5.f, .4f, .4f));
-	//	cout << "V";
-	//}
-
-	
-}
-
 void Player::updateWeaponv2() //  SHOOOOOT
 {
 	if (Mouse::isButtonPressed(Mouse::Left)) // left click to shoot
@@ -278,18 +261,6 @@ void Player::updateWeaponv2() //  SHOOOOOT
 
 void Player::updateWeaponInput()
 {
-	//char dir = 1;
-	//if (Keyboard::isKeyPressed(Keyboard::A)) // while moving left, shoot left, need better algo
-	//{
-	//	char dir = -1;
-	//	updateWeapon(dir, this->sprite.getGlobalBounds().width / 2.0f, -.4f);
-	//}
-	//else
-	//{
-	//	updateWeapon(dir, this->sprite.getGlobalBounds().width / 2.0f, .4f);
-	//}
-	// update laser to move // removing this makes laser still
-
 	updateWeaponv2();
 	for (size_t i = 0; i < this->laser1.size(); i++)
 	{
