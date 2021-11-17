@@ -19,6 +19,9 @@ public:
 	// Components
 	void createSprite(sf::Texture* texture);
 
+	// Accessors
+	virtual const sf::Vector2f& getPosition() const;
+
 	//mutators
 	virtual void setPosition(const float x, const float y);
 	virtual void move(const float& dt, const float x, const float y);

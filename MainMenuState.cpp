@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "MainMenuState.h"
 
-// Initiliaze Functions
+// Initilizations
+
 void MainMenuState::initVariables()
 {
 }
@@ -35,7 +36,7 @@ void MainMenuState::initFonts()
 	mouseText.setString(ss.str());
 
 	// NAME
-	name.setPosition(800,40);
+	name.setPosition(100,10);
 	name.setFont(this->font);
 	name.setCharacterSize(50);
 	name.setFillColor(Color::Green);
@@ -61,18 +62,20 @@ void MainMenuState::initKeybinds()
 
 void MainMenuState::initButtons()
 {
-	this->buttons["GAME_STATE"] = new Button(100.f, 100.f, 200.f, 50.f, &this->font, "NEWGAME",
-		sf::Color(70, 70, 70, 200), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+	this->buttons["GAME_STATE"] = new gui::Button(100.f, 300.f, 200.f, 50.f, &this->font, "Start Game", 30,
+		sf::Color(200, 200, 200, 200), sf::Color(255, 255, 255, 255), sf::Color(20, 20, 20, 50),
+		Color(70, 70, 70, 0), sf::Color(150, 150, 150, 0), sf::Color(20, 20, 20, 0));
 
-	this->buttons["EDITOR_STATE"] = new Button(100.f, 300.f, 200.f, 50.f, &this->font, "MAP EDITOR",
-		Color(20, 20, 20, 200), Color(60, 60, 60, 255), Color(100, 100, 100, 200));
+	this->buttons["EDITOR_STATE"] = new gui::Button(100.f, 400.f, 200.f, 50.f, &this->font, "Map Maker", 30,
+		sf::Color(200, 200, 200, 200), sf::Color(255, 255, 255, 255), sf::Color(20, 20, 20, 0),
+		Color(70, 70, 70, 0), Color(150, 150, 150, 0), Color(20, 20, 20, 0));
 
-	this->buttons["SETTINGS"] = new Button(100.f, 500.f, 200.f, 50.f, &this->font, "Settings",
-		Color(20, 20, 20, 200), Color(60, 60, 60, 255), Color(100, 100, 100, 200));
-
-	this->buttons["EXIT_STATE"] = new Button(100.f, 700.f, 200.f, 50.f, &this->font, "QUIT",
-		sf::Color(100, 100, 100, 200), sf::Color(150, 150, 150, 255), sf::Color(20, 20, 20, 200));
+	this->buttons["EXIT_STATE"] = new gui::Button(100.f, 500.f, 200.f, 50.f, &this->font, "Quit Game", 30,
+		sf::Color(200, 200, 200, 200), sf::Color(255, 255, 255, 255), sf::Color(20, 20, 20, 50),
+		Color(70, 70, 70, 0), Color(150, 150, 150, 0), Color(20, 20, 20, 0));
 }
+
+// CONSTRUCTOR / DESTRUCTOR
 
 MainMenuState::MainMenuState(StateData* state_data)
 	:State(state_data)
@@ -94,6 +97,7 @@ MainMenuState::~MainMenuState()
 	}
 }
 
+// UPDATE / RENDER
 
 void MainMenuState::updateInput(const float& dt)
 {
@@ -102,30 +106,22 @@ void MainMenuState::updateInput(const float& dt)
 
 void MainMenuState::updateButtons()
 {
-	//this->gameState_btn->update(this->mousePosView);
 	// updates all buttons within the mainmenu state and handles functionality
 	for (auto& i : this->buttons)
 	{
-		i.second->update(this->mousePosView);
+		i.second->update(this->mousePosWindow);
 	}
 
-	//New game
+	// New game
 	if (this->buttons["GAME_STATE"]->isPressed())
 	{
 		this->states->push(new GameState(this->stateData));
 	}
 
-	// EDITOR
+	// MAP EDITOR
 	if (this->buttons["EDITOR_STATE"]->isPressed())
 	{
 		this->states->push(new EditorState(this->stateData));
-	}
-
-	// Settings
-	if (this->buttons["SETTINGS"]->isPressed())
-	{
-		// need to create settingsState class
-		//this->states->push(new SettingsState());
 	}
 
 	// Quit the game
@@ -140,14 +136,10 @@ void MainMenuState::update(const float& dt)
 	this->updateMousePositions();
 	this->updateInput(dt);
 	this->updateButtons();
-
-	//cout << "\r\t\t    " << this->mousePosView.x << " " << this->mousePosView.y;
-	//this->gameState_btn->update(this->mousePosView);
 }
 
 void MainMenuState::renderButtons(RenderTarget* target)
 {
-	//this->gameState_btn->render(target);
 	for (auto& i : this->buttons)
 	{
 		i.second->render(*target);
@@ -160,7 +152,6 @@ void MainMenuState::render(RenderTarget* target)
 		target = this->window;
 	target->draw(this->background);
 
-	//this->gameState_btn->render(target);
 	this->renderButtons(target);
 
 	target->draw(mouseText);

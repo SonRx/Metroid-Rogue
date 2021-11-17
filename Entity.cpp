@@ -25,6 +25,12 @@ void Entity::createSprite(sf::Texture* texture)
 	this->sprite->setTexture(*this->texture);
 }
 
+// Accessors
+const sf::Vector2f& Entity::getPosition() const
+{
+	return this->sprite->getPosition();
+}
+
 
 // mutators
 void Entity::setPosition(const float x, const float y)

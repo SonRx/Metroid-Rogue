@@ -7,7 +7,7 @@ void Game::initVariables()
 	//this->fullscreen = false;
 	this->dt = 0.f;
 
-	this->gridSize = 50.f;
+	this->gridSize = 100.f;
 }
 
 void Game::initWindow()
@@ -51,8 +51,8 @@ void Game::initWindow()
 
 void Game::initKeys()
 {
-
 	std::ifstream ifs("Config/supportedKeys.ini");
+	ifs.clear();
 	if (ifs.is_open())
 	{
 		std::string key = "";
@@ -148,7 +148,7 @@ void Game::updateSFMLEvents()
 
 void Game::updateDt()
 {
-	this->dt = this->dtClock.getElapsedTime().asSeconds(); // page 30 in book
+	this->dt = this->dtClock.restart().asSeconds(); // page 30 in book
 
 	//system("cls"); 
 	cout <<"\r delta time: "<< dt;

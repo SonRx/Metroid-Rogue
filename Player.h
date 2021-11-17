@@ -62,7 +62,7 @@ public:
 
 	//Accessors
 	const bool& getAnimSwitch();
-	const sf::Vector2f getPosition() const { return this->sprite.getPosition(); }
+	const sf::Vector2f& getPosition() const { return this->sprite.getPosition(); }
 	const sf::FloatRect getGlobalBounds() const;
 	std::vector<Weapon>& getLasers() { return this->laser1; }
 

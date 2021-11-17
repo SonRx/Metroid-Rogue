@@ -25,6 +25,9 @@
     <Filter Include="Map">
       <UniqueIdentifier>{e2f9fdb7-99ad-4cd5-a603-c6ea80bcd4cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tinyXML2">
+      <UniqueIdentifier>{fb02f379-7784-4370-a9d9-1d1e8a342720}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Metroid Rogue.cpp">
@@ -69,6 +72,15 @@
     <ClCompile Include="Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tinyxml2.cpp">
+      <Filter>tinyXML2</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -109,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="Button.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml2.h">
+      <Filter>tinyXML2</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui.h">
+      <Filter>GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

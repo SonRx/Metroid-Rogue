@@ -1,7 +1,8 @@
 #pragma once
 #include "GameState.h"
 #include "EditorState.h"
-#include "Button.h"
+//#include "Button.h"
+#include "Gui.h"
 
 class MainMenuState :
     public State
@@ -15,7 +16,7 @@ private:
     sf::Text name; // name of game on bg
 
    // Button* gameState_btn;
-    std::map<std::string, Button*> buttons;
+    std::map<std::string, gui::Button*> buttons;
 
     // init
     void initVariables();

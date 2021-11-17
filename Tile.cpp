@@ -3,13 +3,22 @@
 
 Tile::Tile()
 {
+	this->collision = false;
+	this->type = 0;
 }
 
-Tile::Tile(float x, float y, float gridSizeF)
+Tile::Tile(unsigned grid_x, unsigned grid_y, float gridSizeF, const sf::Texture& texture, const sf::IntRect& tex_rect, bool collision, short type)
 {
 	this->shape.setSize(sf::Vector2f(gridSizeF, gridSizeF));
-	this->shape.setFillColor(sf::Color::Cyan);
-	this->shape.setPosition(x, y);
+	this->shape.setFillColor(sf::Color::White);
+	//this->shape.setOutlineThickness(1.f);
+	//this->shape.setOutlineColor(sf::Color::Green);
+	this->shape.setPosition(static_cast<float>(grid_x)* gridSizeF, static_cast<float>(grid_y) * gridSizeF); // static_cast
+	this->shape.setTexture(&texture);
+	this->shape.setTextureRect(tex_rect);
+
+	this->collision = collision;
+	this->type = type;
 }
 
 Tile::~Tile()
@@ -24,10 +33,19 @@ Tile::~Tile()
 //	this->sprite.setTextureRect(texture_rect);
 //}
 
-// Accessor
+// Accessors
 const sf::FloatRect Tile::getGlobalBounds() const
 {
 	return this->shape.getGlobalBounds();
+}
+
+const std::string Tile::getAsString() const
+{
+	std::stringstream ss;
+
+	ss << this->shape.getTextureRect().left << " " << this->shape.getTextureRect().top << " " << this->collision << " " << this->type;
+
+	return ss.str();
 }
 
 // update

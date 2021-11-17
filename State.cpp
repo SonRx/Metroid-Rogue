@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "State.h"
 
+// Constructor / Destructor
 State::State(StateData* state_data)
 {
 	this->stateData = state_data;
@@ -46,14 +47,20 @@ void State::unpauseState()
 	this->paused = false;
 }
 
-void State::updateMousePositions()
+void State::updateMousePositions(sf::View* view) // if no view then view = NULL
 {
 	this->mousePosScreen = sf::Mouse::getPosition();
 	this->mousePosWindow = sf::Mouse::getPosition(*this->window);
+
+	if (view)
+		this->window->setView(*view);
+
 	this->mousePosView = this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window));
 	this->mousePosGrid = sf::Vector2u(
 		static_cast<unsigned>(this->mousePosView.x) / static_cast<unsigned>(this->gridSize),
 		static_cast<unsigned>(this->mousePosView.y) / static_cast<unsigned>(this->gridSize));
+
+	this->window->setView(this->window->getDefaultView());
 }
 
 void State::updateKeyTime(const float& dt)

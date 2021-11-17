@@ -2,29 +2,48 @@
 #include "State.h"
 #include "PauseMenu.h"
 #include "TileMap.h"
-//enum PLAYER_ANIMATION_STATES { IDLE = 0, MOVING_LEFT, MOVING_RIGHT, JUMPING, FALLING };
+#include "tinyxml2.h"
+#include "Level.h"
+
+// Forward Declare
+class PauseMenu;
+class Player;
+class TileMap;
+class sf::View;
+class sf::Font;
+class sf::RenderTexture;
 
 class GameState :
     public State
 {
 private:
-
+    // init player
     Player* player;
-   // sf::Event ev; // sfml events
+
+    // init font
     Font font;
+
+    // init pause menu
     PauseMenu* menu;
 
-    //animation 
+    // animation for player
     short animState;
 
     // World
     sf::Texture worldBgTex;
     sf::Sprite worldBg;
 
+    // init camera view
+    sf::View view;
+    sf::RenderTexture renderTexture;
+    sf::Sprite renderSprite;
+
+    // init tileMap
     TileMap* tileMap;
 
     //init
     void initKeybinds();
+    void initView();
     void initTextures();
     void initPauseMenu();
     void initWorld();
