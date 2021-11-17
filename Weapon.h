@@ -20,7 +20,7 @@ public:
 		float movement_speed, float scalex, float scaley);
 	// OVERLOADED CONSTRUCTOR V2
 	Weapon(Texture* texture, Vector2f position, Vector2f dir, 
-		float maxVel, float accel);
+		float maxVel, float accel, float scale);
 
 	virtual ~Weapon(); // DESTRUCTOR
 

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "GameState.h"
 
+// Initialization
+
 void GameState::initKeybinds()
 {
 	std::ifstream ifs("Config/GameStateKeys.ini");
@@ -16,6 +18,15 @@ void GameState::initKeybinds()
 	}
 
 	ifs.close();
+}
+
+void GameState::initView()
+{
+	this->view.setCenter(sf::Vector2f(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f));
+	this->view.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
+
+//	view.setSize(640, 480); // Creates a smaller view space.
+//	view.zoom(0.5f); // Also creates a smaller view space.
 }
 
 void GameState::initTextures()
@@ -49,14 +60,17 @@ void GameState::initPlayer()
 
 void GameState::initTileMap()
 {
-	this->tileMap = new TileMap(this->stateData->gridSize, 50, 50);
+	this->tileMap = new TileMap(this->stateData->gridSize, 50, 50, "Textures/tilesheet1.png");
+	this->tileMap->loadFile("text.slmp");
 }
 
 // constructor / destructor
+
 GameState::GameState(StateData* state_data)
 	: State(state_data)
 {
 	this->initKeybinds();
+	this->initView();
 	this->initTextures();
 	this->initPauseMenu();
 	this->initWorld();
@@ -72,8 +86,11 @@ GameState::~GameState()
 	delete this->tileMap;
 }
 
+// Update
+
 void GameState::updateView(const float& dt)
 {
+	this->view.setCenter(this->player->getPosition());
 }
 
 void GameState::updateInput(const float& dt)
@@ -172,12 +189,13 @@ void GameState::updateCollision()
 
 void GameState::update(const float& dt)
 {
-	this->updateMousePositions();
+	this->updateMousePositions(&this->view);
 	this->updateKeyTime(dt);
 	this->updateInput(dt);
 
 	if (!this->paused) // pause game state
 	{
+		this->updateView(dt);
 		this->updatePlayerInput(dt);
 		std::cout << "\r\t\t\t\t\t\t\t Currently in Game State";
 
@@ -187,7 +205,7 @@ void GameState::update(const float& dt)
 	}
 	else // update pause menu
 	{
-		this->menu->update(this->mousePosView);
+		this->menu->update(this->mousePosWindow);
 		this->updatePause();
 	}
 }
@@ -196,6 +214,8 @@ void GameState::renderWorld()
 {
 	this->window->draw(this->worldBg);
 }
+
+// Render
 
 void GameState::renderPlayer()
 {
@@ -208,12 +228,13 @@ void GameState::render(RenderTarget* target)
 		target = this->window;
 	this->renderWorld();
 
-	//this->tileMap->render(*target);
-
-	this->player->render(target);
-
+	target->setView(this->view);
+	this->tileMap->render(*target); // render tile under player
+	this->player->render(target); // render player over tile
+	
 	if (this->paused) // pause menu render
 	{
+		target->setView(this->window->getDefaultView());
 		this->menu->render(*target);
 	}
 }

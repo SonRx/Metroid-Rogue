@@ -19,14 +19,14 @@ Weapon::Weapon(Texture* texture, float pos_x, float pos_y, float dir_x, float di
 	this->sprite.scale(scalex,scaley);
 }
 
-Weapon::Weapon(Texture* texture, Vector2f position, Vector2f dir, float maxVel, float accel)
+Weapon::Weapon(Texture* texture, Vector2f position, Vector2f dir, float maxVel, float accel, float scale)
 {
 	this->sprite.setTexture(*texture);
 	this->sprite.setPosition(position);
 	this->direction = dir;
 	this->maxVelocity = maxVel;
-	this->accel = accel;
-	this->sprite.setScale(0.4f,0.4f);
+	this->accel = scale*0.5;
+	this->sprite.setScale(0.4*scale,0.4f);
 }
 
 Weapon::~Weapon()

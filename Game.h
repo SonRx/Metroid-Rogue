@@ -16,7 +16,6 @@ private:
 
 	std::stack<State*> states; // State is an abstract class, cant create objects of states, only pointers and refs
 
-	
 	std::map<string, int> supportedKeys;
 
 	float gridSize;
@@ -28,13 +27,6 @@ private:
 	void initKeys();
 	void initStateData();
 	void initStates();
-	///void initWorld();
-	///void initGUI();
-	///void initPlayer();
-	
-	// World
-	///sf::Texture worldBgTex;
-	///sf::Sprite worldBg;
 
 public:
 
@@ -43,16 +35,10 @@ public:
 
 //////////////////////////// Functions
 	void EOA(); // End of Application
+
 	// updating Functions
 	void updateSFMLEvents();
 	void updateDt();
-	///void updatePollEvent(); // updates SFML events
-	///void updatePlayer(); // points to player->update which then updates everything of player
-	///void updateCombat(); // currently deletes bullets that passes the screen
-	///void updateCollision(); // currently updates player touching the ground
-
-	///void updateUI();
-
 	void update();
 
 
