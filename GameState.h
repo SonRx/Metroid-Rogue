@@ -19,6 +19,7 @@ class GameState :
 private:
     // init player
     Player* player;
+    bool isOnGround;
 
     // init font
     Font font;

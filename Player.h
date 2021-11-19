@@ -57,6 +57,7 @@ private:
 	uint8_t resetJumps = 2;
 	uint8_t jumps;//how many jumps the player can do, currently defaults to double jumps for testing purposes
 	int8_t direction = PLAYER_DIRECTION::RIGHT;//Indicates which way the player is facing, makes playing with code easier
+	bool canJump = 0;//basically a trigger disconnect, if this wasnt here the player could fly forever
 
 	// Core CONSTRUCTORS
 	void initVariables();
@@ -68,6 +69,8 @@ private:
 	void initPhysics(); // these all go in the player constructor in declared in line 35.
 
 public:					
+
+	
 	Player(); // constructor // go to player.cpp for the implemenations of the init variables.
 	virtual ~Player(); // destructor
 
@@ -76,6 +79,7 @@ public:
 	const sf::Vector2f& getPosition() const { return this->sprite.getPosition(); }
 	const sf::FloatRect getGlobalBounds() const;
 	std::vector<Weapon>& getLasers() { return this->laser1; }
+	const bool& getCanJump() const { return this->canJump; }
 
 
 

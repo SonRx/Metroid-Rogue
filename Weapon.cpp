@@ -25,7 +25,7 @@ Weapon::Weapon(Texture* texture, Vector2f position, Vector2f dir, float maxVel, 
 	this->sprite.setPosition(position);
 	this->direction = dir;
 	this->maxVelocity = maxVel;
-	this->accel = scale*0.5;
+	this->accel = scale*3.0; //0.5
 	this->sprite.setScale(0.4*scale,0.4f);
 }
 

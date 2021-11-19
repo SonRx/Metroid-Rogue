@@ -223,19 +223,22 @@ void Player::updateMovement()
 		this->jumps = this->resetJumps;
 	}
 
-	static bool canJump;//basically a trigger disconnect, if this wasnt here the player could fly forever
+		//static bool canJump;//basically a trigger disconnect, if this wasnt here the player could fly forever
 
-	if (sf::Keyboard::isKeyPressed (sf::Keyboard::Key::Space)) // Jump
-	{ // STILL WORKING ON THE JUMPING	
-		if (--(this->jumps) && canJump){//decrements the jumps but treats as bool, when zero the player cant jumps anymore
-			this->moveVert(40);
-			this->animState = PLAYER_ANIMATION_STATES::JUMPING;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) // Jump
+		{ // STILL WORKING ON THE JUMPING
+			if ((this->jumps <= 2) && canJump) {//decrements the jumps but treats as bool, when zero the player cant jumps anymore
+				this->jumps--;
+				this->moveVert(40);
+				this->animState = PLAYER_ANIMATION_STATES::JUMPING;
+			}
+			cout << "#j: " << jumps;
+			canJump = 0;
+			cout << "s";
 		}
-		canJump = 0;
-		cout << "s";
-	} else {
-		canJump = 1;
-	}
+		else {
+			canJump = 1;
+		}
 }
 
 void Player::updatePlayerCenter()
@@ -252,7 +255,7 @@ void Player::updateWeaponv2() //  SHOOOOOT
 		this->laser1.push_back(Weapon(this->laser1Texture["WEAPON"], // texture
 		this->playerCenter, // position of player
 		Vector2f(this->direction, 0), // direction
-		5,  // velocity
+		10,  // velocity 5
 		0.5f, // acceleration
 		this->direction));
 		cout << "\r\t\t\t\tSHOT";

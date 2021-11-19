@@ -23,7 +23,11 @@ void GameState::initKeybinds()
 void GameState::initView()
 {
 	this->view.setCenter(sf::Vector2f(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f));
+	//this->view.setCenter(sf::Vector2f(this->window->getSize().x , this->window->getSize().y));
+	//this->view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
 	this->view.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
+	//this->view.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
+
 
 //	view.setSize(640, 480); // Creates a smaller view space.
 //	view.zoom(0.5f); // Also creates a smaller view space.
@@ -56,6 +60,7 @@ void GameState::initGUI()
 void GameState::initPlayer()
 {
 	this->player = new Player();
+	isOnGround = false;
 }
 
 void GameState::initTileMap()
@@ -91,6 +96,7 @@ GameState::~GameState()
 void GameState::updateView(const float& dt)
 {
 	this->view.setCenter(this->player->getPosition());
+	//this->view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
 }
 
 void GameState::updateInput(const float& dt)
@@ -165,7 +171,12 @@ void GameState::updateCombat()
 {
 	for (size_t i = 0; i < this->player->getLasers().size(); i++)
 	{
-		if (this->player->getLasers()[i].getPos().x > this->window->getSize().x)
+		int laserDistTraveled = this->player->getLasers()[i].getPos().x;
+		int playerPosition = this->player->getPosition().x;
+		int posDifference = abs(laserDistTraveled - playerPosition);
+		cout << posDifference;
+		if (posDifference > 600)
+		//if (laserDistTraveled > abs(this->player->getPosition().x == 200))
 		{
 			this->player->getLasers().erase(this->player->getLasers().begin() + i);
 			cout << "\r\t\t\t\t\tlaser[" << i << "] deleted";
@@ -184,6 +195,14 @@ void GameState::updateCollision()
 			this->player->getPosition().x,
 			this->window->getSize().y - this->player->getGlobalBounds().height
 		);
+		isOnGround = true;
+		cout << "\t\t" << isOnGround;
+	}
+	else if (this->player->getPosition().y + this->player->getGlobalBounds().height < this->window->getSize().y) // In the air
+	{
+		isOnGround = false;
+		cout << "\t\t" << isOnGround;
+		cout << "getcanjump: " << this->player->getCanJump();//basically a trigger disconnect, if this wasnt here the player could fly forever
 	}
 }
 
