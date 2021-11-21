@@ -7,7 +7,7 @@ void Game::initVariables()
 	//this->fullscreen = false;
 	this->dt = 0.f;
 
-	this->gridSize = 100.f;
+	this->gridSize = 32.f;
 }
 
 void Game::initWindow()
@@ -210,8 +210,8 @@ void Game::update()
 {
 	this->updateSFMLEvents();
 	// update states
-	if (!this->states.empty()) // check if not empty, then
-	{
+	if (!this->states.empty() && this->window->hasFocus()) // check if not empty, then
+	{						// hasFocus() allows user to alt tab
 		this->states.top()->update(this->dt); // update top of stack
 
 		if (this->states.top()->getQuit())

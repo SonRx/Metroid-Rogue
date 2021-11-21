@@ -138,11 +138,11 @@ void MainMenuState::update(const float& dt)
 	this->updateButtons();
 }
 
-void MainMenuState::renderButtons(RenderTarget* target)
+void MainMenuState::renderButtons(RenderTarget& target)
 {
 	for (auto& i : this->buttons)
 	{
-		i.second->render(*target);
+		i.second->render(target);
 	}
 }
 
@@ -152,7 +152,7 @@ void MainMenuState::render(RenderTarget* target)
 		target = this->window;
 	target->draw(this->background);
 
-	this->renderButtons(target);
+	this->renderButtons(*target);
 
 	target->draw(mouseText);
 	target->draw(name);

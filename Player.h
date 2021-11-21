@@ -69,7 +69,6 @@ private:
 	void initPhysics(); // these all go in the player constructor in declared in line 35.
 
 public:					
-
 	
 	Player(); // constructor // go to player.cpp for the implemenations of the init variables.
 	virtual ~Player(); // destructor
@@ -77,7 +76,7 @@ public:
 	//Accessors
 	const bool& getAnimSwitch();
 	const sf::Vector2f& getPosition() const { return this->sprite.getPosition(); }
-	const sf::FloatRect getGlobalBounds() const;
+	const sf::FloatRect getGlobalBounds() const { return this->sprite.getGlobalBounds(); }
 	std::vector<Weapon>& getLasers() { return this->laser1; }
 	const bool& getCanJump() const { return this->canJump; }
 
@@ -105,7 +104,7 @@ public:
 
 	// Render
 	//void renderGUI();
-	void render(sf::RenderTarget* target);
+	void render(sf::RenderTarget& target);
 };
 
 

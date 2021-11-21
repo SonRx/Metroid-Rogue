@@ -43,6 +43,7 @@ private:
     TileMap* tileMap;
 
     //init
+    void initPostRender();
     void initKeybinds();
     void initView();
     void initTextures();
@@ -63,6 +64,7 @@ public:
     void updateInput(const float& dt);
     void updatePlayerInput(const float& dt);
     void updatePause();
+    void updateTileMap(const float& dt);
     void updatePlayer(const float& dt);
     void updateCombat();
     void updateCollision();

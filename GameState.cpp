@@ -3,6 +3,14 @@
 
 // Initialization
 
+void GameState::initPostRender()
+{
+	this->renderTexture.create(this->window->getSize().x, this->window->getSize().y);
+	this->renderSprite.setTexture(this->renderTexture.getTexture());
+	this->renderSprite.setTextureRect(sf::IntRect(0, 0,
+		this->window->getSize().x, this->window->getSize().y));
+}
+
 void GameState::initKeybinds()
 {
 	std::ifstream ifs("Config/GameStateKeys.ini");
@@ -25,7 +33,7 @@ void GameState::initView()
 	this->view.setCenter(sf::Vector2f(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f));
 	//this->view.setCenter(sf::Vector2f(this->window->getSize().x , this->window->getSize().y));
 	//this->view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
-	this->view.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
+	this->view.setSize(sf::Vector2f(this->window->getSize().x + 200, this->window->getSize().y + 200));
 	//this->view.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
 
 
@@ -46,11 +54,11 @@ void GameState::initPauseMenu()
 
 void GameState::initWorld()
 {
-	if (!this->worldBgTex.loadFromFile("Textures/dung.jpg"))  // LOOK IN TEXTURE FOLDER @ B ..\Metro Rogue\textures
+	if (!this->worldBgTex.loadFromFile("Textures/castle_bg.jpg"))  // LOOK IN TEXTURE FOLDER @ B ..\Metro Rogue\textures
 		std::cout << "ERROR::GAME::COULD NOT LOAD BG THEME" << "\n";
 	this->worldBg.setTexture(this->worldBgTex); // worldBgTex is the object of class Texture created in game.h
-	this->worldBg.scale(1.f, 1.f); // .setTexture and .scale is the functions of class texture
-	this->worldBg.setPosition(0.f, 225.f);
+	this->worldBg.scale(3.2f, 2.67f); // .setTexture and .scale is the functions of class texture
+	//this->worldBg.setPosition(0.f, 225.f);
 }
 
 void GameState::initGUI()
@@ -65,7 +73,8 @@ void GameState::initPlayer()
 
 void GameState::initTileMap()
 {
-	this->tileMap = new TileMap(this->stateData->gridSize, 50, 50, "Textures/tilesheet1.png");
+	//this->tileMap = new TileMap(this->stateData->gridSize, 50, 50, "Textures/tilesheet1.png");
+	this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
 	this->tileMap->loadFile("text.slmp");
 }
 
@@ -74,6 +83,7 @@ void GameState::initTileMap()
 GameState::GameState(StateData* state_data)
 	: State(state_data)
 {
+	this->initPostRender();
 	this->initKeybinds();
 	this->initView();
 	this->initTextures();
@@ -95,7 +105,7 @@ GameState::~GameState()
 
 void GameState::updateView(const float& dt)
 {
-	this->view.setCenter(this->player->getPosition());
+	this->view.setCenter(std::floor(this->player->getPosition().x), std::floor(this->player->getPosition().y));
 	//this->view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
 }
 
@@ -162,6 +172,12 @@ void GameState::updatePause()
 		this->endState();
 }
 
+void GameState::updateTileMap(const float& dt)
+{
+	this->tileMap->update();
+	this->tileMap->updateCollision(this->player);
+}
+
 void GameState::updatePlayer(const float& dt)
 {
 	this->player->update(dt);
@@ -193,7 +209,7 @@ void GameState::updateCollision()
 		this->player->resetVelocityY();
 		this->player->setPosition(
 			this->player->getPosition().x,
-			this->window->getSize().y - this->player->getGlobalBounds().height
+			this->window->getSize().y - 0.85*this->player->getGlobalBounds().height
 		);
 		isOnGround = true;
 		cout << "\t\t" << isOnGround;
@@ -221,6 +237,7 @@ void GameState::update(const float& dt)
 		this->updatePlayer(dt);
 		this->updateCombat();
 		this->updateCollision();
+		this->updateTileMap(dt);
 	}
 	else // update pause menu
 	{
@@ -238,22 +255,30 @@ void GameState::renderWorld()
 
 void GameState::renderPlayer()
 {
-	this->player->render(this->window);
+	this->player->render(this->renderTexture);
 }
 
 void GameState::render(RenderTarget* target)
 {
 	if (!target)
 		target = this->window;
-	this->renderWorld();
+	this->renderTexture.clear();
 
-	target->setView(this->view);
-	this->tileMap->render(*target); // render tile under player
-	this->player->render(target); // render player over tile
+	this->renderTexture.setView(this->view);
+//	this->renderWorld(); // just the bg
+	
+	
+	//target->setView(this->view);
+	this->tileMap->render(this->renderTexture); // render tile under player
+	this->player->render(this->renderTexture); // render player over tile
 	
 	if (this->paused) // pause menu render
 	{
-		target->setView(this->window->getDefaultView());
-		this->menu->render(*target);
+		this->renderTexture.setView(this->renderTexture.getDefaultView());
+		this->menu->render(this->renderTexture);
 	}
+
+	this->renderTexture.display();
+	this->renderSprite.setTexture(this->renderTexture.getTexture());
+	target->draw(this->renderSprite);
 }

@@ -68,6 +68,8 @@ Player::Player()
 	:level(1), exp(0), expN(50), hp(10),
 	hpMax(10), score(0), damage(1), damageMax(2)  // DEFAULT CONSTRUCTORS
 {
+
+	this->createHitbox(this->sprite, 25.f, 25.f, 75.f, 115.f);
 	this->initVariables();
 	this->initTexture();
 	this->initGUI();
@@ -83,14 +85,9 @@ Player::~Player()
 	{
 		delete i.second;
 	}
-
-	/*for (auto& i : this->laser1)
-	{
-		delete i;
-	}*/
 }
 
-// Accessors
+// Accessors -> Most of the accessors are already implemented in the header class
 const bool& Player::getAnimSwitch()
 {
 	bool anim_switch = this->animationSwitch;
@@ -100,23 +97,6 @@ const bool& Player::getAnimSwitch()
 
 	return anim_switch;
 }
-
-//const sf::Vector2f Player::getPosition() const
-//{
-//	return this->sprite.getPosition();
-//}
-
-const sf::FloatRect Player::getGlobalBounds() const
-{
-	return this->sprite.getGlobalBounds();
-}
-
-//inline vector<Weapon*> Player::getLasers()
-//{
-//	return this->laser1;
-//}
-
-
 
 
 // Modifiers
@@ -324,20 +304,25 @@ void Player::update(const float& dt)
 	this->updateAnimations();
 	this->updatePhysics();
 	this->updateWeaponInput();
+
+	this->hitbox->update();
 }
 
-void Player::render(sf::RenderTarget* target)
+void Player::render(sf::RenderTarget& target)
 {
 	// render laser
 	for (size_t i = 0; i < this->laser1.size(); i++)
 	{
-		this->laser1[i].render(target);
+		this->laser1[i].render(&target);
 	}
 
 	// render player -> called in game class
-	target->draw(this->sprite);
+	target.draw(this->sprite);
 
 	// RenderGUI
-	target->draw(this->playerHpBarBack);
-	target->draw(this->playerHpBar);
+	target.draw(this->playerHpBarBack);
+	target.draw(this->playerHpBar);
+
+	// hitbox
+	this->hitbox->render(target);
 }

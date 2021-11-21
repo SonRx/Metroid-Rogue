@@ -34,7 +34,7 @@ public:
     void updateInput(const float& dt);
     void updateButtons();
     void update(const float& dt);
-    void renderButtons(RenderTarget* target = NULL);
+    void renderButtons(RenderTarget& target);
     void render(RenderTarget* target = NULL);
 };
 

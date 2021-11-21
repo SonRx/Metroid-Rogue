@@ -48,6 +48,16 @@ const std::string Tile::getAsString() const
 	return ss.str();
 }
 
+const sf::Vector2f& Tile::getPosition() const
+{
+	return this->shape.getPosition();
+}
+
+const bool& Tile::getCollision() const
+{
+	return this->collision;
+}
+
 // update
 void Tile::update()
 {

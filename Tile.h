@@ -24,8 +24,11 @@ public:
 	// Accessors
 	const sf::FloatRect getGlobalBounds() const;
 	const std::string getAsString() const;
+	const sf::Vector2f& getPosition() const;
+	const bool& getCollision() const;
 
 	//Modifers
+	
 	void update();
 
 	//Rendering

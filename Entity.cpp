@@ -3,8 +3,7 @@
 
 void Entity::initVariables()
 {
-	this->texture = NULL;
-	this->sprite = NULL;
+	this->hitbox = NULL;
 	this->movementSpeed = 100.f;
 }
 
@@ -15,37 +14,52 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-	delete this->sprite;
+	delete this->hitbox;
 }
 
 // Components
-void Entity::createSprite(sf::Texture* texture)
+void Entity::createSprite(sf::Texture& texture)
 {
-	this->texture = texture;
-	this->sprite->setTexture(*this->texture);
+	this->sprite.setTexture(texture);
+}
+
+void Entity::createHitbox(sf::Sprite& sprite, float offset_x, float offset_y, float width, float height)
+{
+	this->hitbox = new Hitbox(sprite, offset_x, offset_y, width, height);
 }
 
 // Accessors
 const sf::Vector2f& Entity::getPosition() const
 {
-	return this->sprite->getPosition();
+	if (this->hitbox)
+		return this->hitbox->getPosition();
+
+	return this->sprite.getPosition();
+}
+
+const sf::FloatRect Entity::getGlobalBounds() const
+{
+	if (this->hitbox)
+		return this->hitbox->getGlobalBounds();
+
+	return this->sprite.getGlobalBounds();
 }
 
 
 // mutators
 void Entity::setPosition(const float x, const float y)
 {
-	if (this->sprite)
+	if (this->hitbox)
 	{
-		this->sprite->setPosition(x, y);
+		this->hitbox->setPosition(x, y);
 	}
 }
 
 void Entity::move(const float & dt, const float dirx, const float diry)
 {
-	if (this->sprite) // if sprite exists
+	if (&this->sprite) // if sprite exists
 	{
-		this->sprite->move(dirx * this->movementSpeed * dt, diry * this->movementSpeed * dt);
+		this->sprite.move(dirx * this->movementSpeed * dt, diry * this->movementSpeed * dt);
 	}
 }
 
@@ -54,10 +68,6 @@ void Entity::update(const float& dt)
 	
 }
 
-void Entity::render(sf::RenderTarget* target)
+void Entity::render(sf::RenderTarget& target)
 {
-	if (this->sprite) // if sprite exists
-	{
-		target->draw(*this->sprite);
-	}
 }
