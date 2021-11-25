@@ -33,6 +33,10 @@ public:
 	virtual void setPosition(const float x, const float y);
 	virtual void move(const float& dt, const float x, const float y);
 
+	void resetVelocity();
+	void resetVelocityX();
+	void resetVelocityY();
+
 	// Update
 	virtual void update(const float& dt) = 0;
 	virtual void render(sf::RenderTarget& target) = 0;

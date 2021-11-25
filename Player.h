@@ -84,6 +84,7 @@ public:
 
 	//Modifiers
 	void setPosition(const float x, const float y);
+	void resetVelocityX();
 	void resetVelocityY();
 	void resetAnimationTimer();
 	void move(const float dir_x, const float dir_y);

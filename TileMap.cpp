@@ -219,7 +219,7 @@ void TileMap::loadFile(const std::string file_name)
 	in_file.close();
 }
 
-void TileMap::updateCollision(Entity* entity)
+void TileMap::updateCollision(Entity* entity) // VERY IMPORTANT 
 {
 	/* World Bounds for x */
 	if (entity->getPosition().x < 0.f)

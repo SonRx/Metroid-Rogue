@@ -105,7 +105,12 @@ void Player::setPosition(const float x, const float y)
 	this->sprite.setPosition(x, y);
 }
 
-void Player::resetVelocityY()
+void Player::resetVelocityX() // stops velocity x
+{
+	this->velocity.x = 0;
+}
+
+void Player::resetVelocityY() // stops velocity y
 {
 	this->velocity.y = 0;
 }
