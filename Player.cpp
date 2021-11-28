@@ -36,7 +36,6 @@ void Player::initWeapon()
 	this->laser1Texture["WEAPON"]->loadFromFile("Textures/Lasers/20.png");
 }
 
-
 void Player::initSprite()
 {
 	this->sprite.setTexture(this->textureSheet);
@@ -68,8 +67,8 @@ Player::Player()
 	:level(1), exp(0), expN(50), hp(10),
 	hpMax(10), score(0), damage(1), damageMax(2)  // DEFAULT CONSTRUCTORS
 {
-
-	this->createHitbox(this->sprite, 25.f, 25.f, 75.f, 115.f);
+	//this->createHitbox(this->sprite, 25.f, 25.f, 75.f, 115.f);
+	this->createHitbox(this->sprite, 25.f, 25.f, 70.f, 125.f);
 	this->initVariables();
 	this->initTexture();
 	this->initGUI();
@@ -103,6 +102,12 @@ const bool& Player::getAnimSwitch()
 void Player::setPosition(const float x, const float y)
 {
 	this->sprite.setPosition(x, y);
+}
+
+void Player::resetVelocity() // stops both directions
+{
+	this->velocity.x = 0;
+	this->velocity.y = 0;
 }
 
 void Player::resetVelocityX() // stops velocity x
@@ -198,6 +203,10 @@ void Player::updateMovement()
 				this->animState = PLAYER_ANIMATION_STATES::RUNNING;
 
 			cout << "D";
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+		{
+			this->moveVert(this->direction);
 		}
 	}
 	else {

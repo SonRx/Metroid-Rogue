@@ -67,8 +67,8 @@ void EditorState::initButtons()
 
 void EditorState::initTileMap()
 {
-	//this->tileMap = new TileMap(this->stateData->gridSize, 10, 10, "Textures/tilesheet1.png");
-	this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
+	this->tileMap = new TileMap(this->stateData->gridSize, 40, 40, "Textures/tile_castle.png");
+	//this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
 }
 
 void EditorState::initGui()
@@ -140,16 +140,16 @@ void EditorState::updateEditorInput(const float& dt)
 {
 	// Move view
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		this->view.move(0.f, this->camSpeed *dt);
+		this->view.move(0.f,-this->camSpeed *dt);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		this->view.move(0.f, this->camSpeed * dt);
+		this->view.move(0.f,this->camSpeed * dt);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		this->view.move(this->camSpeed * dt, 0.f);
+		this->view.move(-this->camSpeed * dt, 0.f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		this->view.move(this->camSpeed * dt, 0.f);
 
 	// adds tile for every left click
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->getKeytime())
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))// && this->getKeytime())
 	{	// editor wont be able to add tile within the side bar
 		if (!this->sidebar.getGlobalBounds().contains(sf::Vector2f(this->mousePosWindow)))
 		{
@@ -235,10 +235,10 @@ void EditorState::updatePause()
 		this->endState();
 
 	if (this->menu->isButtonPressed("SAVE"))
-		this->tileMap->saveFile("text.slmp"); // Save to this file -> located in explorer
+		this->tileMap->saveFile("text2.slmp"); // Save to this file -> located in explorer
 
 	if (this->menu->isButtonPressed("LOAD"))
-		this->tileMap->loadFile("text.slmp"); // loads this file into the game
+		this->tileMap->loadFile("text2.slmp"); // loads this file into the game
 }
 
 void EditorState::update(const float& dt)

@@ -1,9 +1,11 @@
 #pragma once
 #include "Tile.h"
 #include "Entity.h"
+#include "Player.h"
 
 class Tile; // forward declaration
 class Entity;
+class Player;
 
 class TileMap
 {
@@ -21,6 +23,9 @@ private:
 	string textureFile;		
 	sf::Texture tileSheet;
 	sf::RectangleShape collisionBox;
+
+	// Culling
+	int fromX, toX, fromY, toY, layer;
 	void clear();
 
 public:
@@ -39,7 +44,7 @@ public:
 	void loadFile(const std::string file_name);
 
 	// update
-	void updateCollision(Entity* entity);
+	void updateCollision(Entity* entity, const float& dt);
 	void update();
 
 	// render

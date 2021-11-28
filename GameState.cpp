@@ -73,9 +73,10 @@ void GameState::initPlayer()
 
 void GameState::initTileMap()
 {
-	//this->tileMap = new TileMap(this->stateData->gridSize, 50, 50, "Textures/tilesheet1.png");
-	this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
-	this->tileMap->loadFile("text.slmp");
+	this->tileMap = new TileMap(this->stateData->gridSize, 40, 40, "Textures/tile_castle.png");
+	this->tileMap->loadFile("text2.slmp");
+	//this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
+	//this->tileMap->loadFile("text.slmp");
 }
 
 // constructor / destructor
@@ -172,10 +173,10 @@ void GameState::updatePause()
 		this->endState();
 }
 
-void GameState::updateTileMap(const float& dt)
+void GameState::updateTileMap(const float& dt) // this replaces update collision in line ~205
 {
 	this->tileMap->update();
-	this->tileMap->updateCollision(this->player);
+	this->tileMap->updateCollision(this->player, dt);
 }
 
 void GameState::updatePlayer(const float& dt)
@@ -234,10 +235,11 @@ void GameState::update(const float& dt)
 		this->updatePlayerInput(dt);
 		std::cout << "\r\t\t\t\t\t\t\t Currently in Game State";
 
+		this->updateTileMap(dt); // tile collision
 		this->updatePlayer(dt);
 		this->updateCombat();
-		this->updateCollision();
-		this->updateTileMap(dt);
+		//this->updateCollision();
+		
 	}
 	else // update pause menu
 	{
@@ -269,7 +271,7 @@ void GameState::render(RenderTarget* target)
 	
 	
 	//target->setView(this->view);
-	this->tileMap->render(this->renderTexture); // render tile under player
+	this->tileMap->render(this->renderTexture, this->player); // render tile under player
 	this->player->render(this->renderTexture); // render player over tile
 	
 	if (this->paused) // pause menu render

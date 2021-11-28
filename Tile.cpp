@@ -53,6 +53,11 @@ const sf::Vector2f& Tile::getPosition() const
 	return this->shape.getPosition();
 }
 
+const bool Tile::intersects(const sf::FloatRect bounds) const
+{
+	return this->shape.getGlobalBounds().intersects(bounds);
+}
+
 const bool& Tile::getCollision() const
 {
 	return this->collision;

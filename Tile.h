@@ -22,15 +22,16 @@ public:
 	virtual ~Tile();
 
 	// Accessors
-	const sf::FloatRect getGlobalBounds() const;
-	const std::string getAsString() const;
-	const sf::Vector2f& getPosition() const;
-	const bool& getCollision() const;
+	virtual const sf::FloatRect getGlobalBounds() const;
+	virtual const std::string getAsString() const;
+	virtual const sf::Vector2f& getPosition() const;
+	virtual const bool intersects(const sf::FloatRect bounds) const;
+	virtual const bool& getCollision() const;
 
 	//Modifers
 	
-	void update();
+	virtual void update();
 
 	//Rendering
-	void render(sf::RenderTarget& target);
+	virtual void render(sf::RenderTarget& target);
 };
