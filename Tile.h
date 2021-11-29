@@ -1,6 +1,6 @@
 #pragma once
 
-enum TileTypes {DEFAULT = 0, DAMAGING};
+enum TileTypes {DEFAULT = 0, DAMAGING, OVERTILE};
 
 class Tile
 {
@@ -16,7 +16,7 @@ protected:
 public:
 	//Constructors
 	Tile();
-	Tile(unsigned grid_x, unsigned grid_y, float gridSizeF,const sf::Texture& texture, const sf::IntRect& tex_rect, bool collision = false, short type = TileTypes::DEFAULT);
+	Tile(int grid_x, int grid_y, float gridSizeF,const sf::Texture& texture, const sf::IntRect& tex_rect, bool collision = false, short type = TileTypes::DEFAULT);
 	//Tile(sf::Texture& texture_sheet, sf::IntRect texture_rect, bool damaging = false);
 
 	virtual ~Tile();
@@ -27,6 +27,7 @@ public:
 	virtual const sf::Vector2f& getPosition() const;
 	virtual const bool intersects(const sf::FloatRect bounds) const;
 	virtual const bool& getCollision() const;
+	const short& getType() const; // is used in TileMap::Render()
 
 	//Modifers
 	

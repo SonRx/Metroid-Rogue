@@ -58,7 +58,7 @@ void Player::initPhysics()
 	this->velocityMax = 12;
 	this->velocityMin = 1;
 	this->acceleration = 2;
-	this->drag = 0.88; // deceleration
+	this->drag = 0.88f; // deceleration
 	this->gravity = 4;
 	this->velocityMaxY = 15;
 }

@@ -7,14 +7,16 @@ void EditorState::initVariables()
 {
 	this->textureRect = sf::IntRect(0, 0, static_cast<int>(this->stateData->gridSize), static_cast<int>(this->stateData->gridSize));
 	this->collision = false;
+	// mouse text
 	this->type = TileTypes::DEFAULT;
-	this->camSpeed = 750.f;
+	this->camSpeed = 750;
+	this->layer = 0;
 }
 
 void EditorState::initView()
 {
-	this->view.setCenter(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f);
-	this->view.setSize(sf::Vector2f(this->window->getSize().x,this->window->getSize().y));
+	this->view.setCenter(static_cast<float>(this->window->getSize().x) / 2.f, static_cast<float>(this->window->getSize().y) / 2.f);
+	this->view.setSize(sf::Vector2f(static_cast<float>(this->window->getSize().x),static_cast<float>(this->window->getSize().y)));
 }
 
 void EditorState::initBackground()
@@ -67,7 +69,7 @@ void EditorState::initButtons()
 
 void EditorState::initTileMap()
 {
-	this->tileMap = new TileMap(this->stateData->gridSize, 40, 40, "Textures/tile_castle.png");
+	this->tileMap = new TileMap(this->stateData->gridSize, 160, 40, "Textures/tile_castle.png");  // text2 is 40 40
 	//this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
 }
 
@@ -149,7 +151,7 @@ void EditorState::updateEditorInput(const float& dt)
 		this->view.move(this->camSpeed * dt, 0.f);
 
 	// adds tile for every left click
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))// && this->getKeytime())
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->getKeytime())
 	{	// editor wont be able to add tile within the side bar
 		if (!this->sidebar.getGlobalBounds().contains(sf::Vector2f(this->mousePosWindow)))
 		{
@@ -223,7 +225,8 @@ void EditorState::updateGui(const float& dt)
 	ss << this->mousePosView.x << "  " << this->mousePosView.y << "\n"
 		<< this->mousePosGrid.x << "  " << this->mousePosGrid.y << "\n"
 		<< this->textureRect.left << " " << this->textureRect.top << "\n"
-		<< "Collision: " << this->collision << "\n" << "Type: " << this->type;
+		<< "Collision: " << this->collision << "\n" << "Type: " << this->type << "\n"
+		<< "Tiles: " << this->tileMap->getLayerSize(this->mousePosGrid.x, this->mousePosGrid.y, this->layer);
 
 	this->cursorText.setString(ss.str());
 
@@ -235,10 +238,10 @@ void EditorState::updatePause()
 		this->endState();
 
 	if (this->menu->isButtonPressed("SAVE"))
-		this->tileMap->saveFile("text2.slmp"); // Save to this file -> located in explorer
+		this->tileMap->saveFile("text3.slmp"); // Save to this file -> located in explorer
 
 	if (this->menu->isButtonPressed("LOAD"))
-		this->tileMap->loadFile("text2.slmp"); // loads this file into the game
+		this->tileMap->loadFile("text3.slmp"); // loads this file into the game
 }
 
 void EditorState::update(const float& dt)
@@ -298,7 +301,8 @@ void EditorState::render(RenderTarget* target)
 
 	// Render tile map with this view
 	target->setView(this->view); // Game camera
-	this->tileMap->render(*target);
+	this->tileMap->render(*target, this->mousePosGrid);
+	this->tileMap->queueRender(*target); // Tiles that render over the player
 
 	target->setView(this->window->getDefaultView());
 	this->renderButtons(*target);

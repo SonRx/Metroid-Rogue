@@ -2,7 +2,6 @@
 #include "State.h"
 #include "PauseMenu.h"
 #include "TileMap.h"
-#include "tinyxml2.h"
 #include "Level.h"
 
 // Forward Declare

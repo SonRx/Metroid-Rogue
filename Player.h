@@ -6,7 +6,8 @@ enum PLAYER_ANIMATION_STATES { IDLE, JUMPING, FALLING, RUNNING};
 //leaving MOVING_LEFT and MOVING_RIGHT for code compatability, recomended to use RUNNING now and this->dir to indicate direction
 
 enum PLAYER_DIRECTION { LEFT = -1, RIGHT = 1 };
-
+class Entity;
+class Weapon;
 
 class Player :
 	public Entity

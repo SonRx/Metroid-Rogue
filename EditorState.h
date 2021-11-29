@@ -40,6 +40,7 @@ private:
 
     bool collision;
     short type;
+    int layer;
 
     // init
     void initVariables();

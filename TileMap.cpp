@@ -4,14 +4,18 @@
 // Private 
 void TileMap::clear()
 {
-	for (size_t x = 0; x < this->maxSizeGrid.x; x++)
+	for (int x = 0; x < this->maxSizeGrid.x; x++)
 	{
-		for (size_t y = 0; y < this->maxSizeGrid.y; y++)
+		for (int y = 0; y < this->maxSizeGrid.y; y++)
 		{
-			for (size_t z = 0; z < this->layers; z++)
+			for (int z = 0; z < this->layers; z++)
 			{
-				delete this->map[x][y][z];
-				this->map[x][y][z] = NULL;
+				for (size_t k = 0; k < this->map[x][y][z].size(); k++)
+				{
+					delete this->map[x][y][z][k];
+					this->map[x][y][z][k] = NULL;
+				}
+				this->map[x][y][z].clear();
 			}
 			this->map[x][y].clear();
 		}
@@ -25,10 +29,10 @@ void TileMap::clear()
 // Public 
 
 // Constructor
-TileMap::TileMap(float gridSize, unsigned width, unsigned height, std::string texture_file)
+TileMap::TileMap(float gridSize, int width, int height, std::string texture_file)
 {
 	this->gridSizeF = gridSize;
-	this->gridSizeU = static_cast<unsigned>(this->gridSizeF);
+	this->gridSizeI = static_cast<int>(this->gridSizeF);
 
 	this->maxSizeGrid.x = width;
 	this->maxSizeGrid.y = height;
@@ -45,16 +49,16 @@ TileMap::TileMap(float gridSize, unsigned width, unsigned height, std::string te
 	this->toY = 0;
 	this->layer = 0;
 
-	this->map.resize(this->maxSizeGrid.x, std::vector< vector<Tile*> >());
-	for (size_t x = 0; x < this->maxSizeGrid.x; x++)
+	this->map.resize(this->maxSizeGrid.x, std::vector< vector< vector<Tile*> > >());
+	for (int x = 0; x < this->maxSizeGrid.x; x++)
 	{
-		for (size_t y = 0; y < this->maxSizeGrid.y; y++)
+		for (int y = 0; y < this->maxSizeGrid.y; y++)
 		{
-			this->map[x].resize(this->maxSizeGrid.y, vector<Tile*>());
+			this->map[x].resize(this->maxSizeGrid.y, vector< vector <Tile*> >());
 
-			for (size_t z = 0; z < this->layers; z++)
+			for (int z = 0; z < this->layers; z++)
 			{
-				this->map[x][y].resize(this->layers, NULL); 
+				this->map[x][y].resize(this->layers, vector<Tile*>()); 
 			}
 		}
 	}
@@ -79,31 +83,44 @@ const sf::Texture* TileMap::getTileSheet() const
 	return &this->tileSheet;
 }
 
+const int TileMap::getLayerSize(const int x, const int y, const int layer) const
+{
+	if (x >= 0 && x < this->map.size())
+	{
+		if (y >= 0 && y < this->map[x].size())
+		{
+			if (layer >= 0 && layer < this->map[x][y].size())
+			{	
+				return this->map[x][y][layer].size(); // know if tile is inbetween
+			}
+		}
+	}
+	return -1; 
+}
+
 // Mutators
-void TileMap::addTile(const unsigned x, const unsigned y, const unsigned z, const sf::IntRect& tex_rect, const bool collision, const short type)
+void TileMap::addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const bool collision, const short type)
 {	// three inputs from the mouse position in the grid. Adds a tile to a position of the array
 	if (x < this->maxSizeGrid.x && x >= 0 &&
 		y < this->maxSizeGrid.y && y >= 0 &&
 		z < this->layers && z >= 0)
 	{
-		if (this->map[x][y][z] == NULL)
-		{	// checks if its okay to add tile
-			this->map[x][y][z] = new Tile(x, y, this->gridSizeF, this->tileSheet, tex_rect, collision, type);
+			// checks if its okay to add tile
+			this->map[x][y][z].push_back(new Tile(x, y, this->gridSizeF, this->tileSheet, tex_rect, collision, type));
 			cout << "DEBUG: ADDED TILE!" << endl;
-		}
 	}
 }
 
-void TileMap::removeTile(const unsigned x, const unsigned y, const unsigned z)
+void TileMap::removeTile(const int x, const int y, const int z)
 {	// three inputs from the mouse position in the grid. removes a tile to a position of the array
 	if (x < this->maxSizeGrid.x && x >= 0 &&
 		y < this->maxSizeGrid.y && y >= 0 &&
 		z < this->layers && z >= 0)
 	{
-		if (this->map[x][y][z] != NULL)
+		if (!this->map[x][y][z].empty())
 		{	// checks if its okay to remove tile
-			delete this->map[x][y][z]; // deletes
-			this->map[x][y][z] = NULL; // set to null
+			delete this->map[x][y][z][this->map[x][y][z].size() -1];
+			this->map[x][y][z].pop_back(); // place previous condition
 			cout << "DEBUG: REMOVED TILE!" << endl;
 		}
 	}
@@ -131,21 +148,26 @@ void TileMap::saveFile(const std::string file_name)
 	if (out_file.is_open())
 	{
 		out_file << this->maxSizeGrid.x << " " << this->maxSizeGrid.y << endl;
-		out_file << this->gridSizeU << endl;
+		out_file << this->gridSizeI << endl;
 		out_file << this->layers << endl;
 		out_file << this->textureFile << endl;
 
-		for (size_t x = 0; x < this->maxSizeGrid.x; x++)
+		for (int x = 0; x < this->maxSizeGrid.x; x++)
 		{
 
-			for (size_t y = 0; y < this->maxSizeGrid.y; y++)
+			for (int y = 0; y < this->maxSizeGrid.y; y++)
 			{
 
-				for (size_t z = 0; z < this->layers; z++)
+				for (int z = 0; z < this->layers; z++)
 				{
 					//out_file << 1 << 1 << 2 << 3 << 5 << " ";
-					if (this->map[x][y][z]) // null pointer check
-						out_file << x << " " << y << " " << z << " " << this->map[x][y][z]->getAsString() << " ";
+					if (!this->map[x][y][z].empty()) // null pointer check
+					{
+						for (size_t k = 0; k < this->map[x][y][z].size(); k++)
+						{
+							out_file << x << " " << y << " " << z << " " << this->map[x][y][z][k]->getAsString() << " ";
+						}
+					}
 				}
 			}
 		}
@@ -168,14 +190,14 @@ void TileMap::loadFile(const std::string file_name)
 	if (in_file.is_open())
 	{
 		sf::Vector2u size;
-		unsigned gridSize = 0;
-		unsigned layers = 0;
+		int gridSize = 0;
+		int layers = 0;
 		std::string texture_file = ""; // nothing
-		unsigned x = 0;
-		unsigned y = 0;
-		unsigned z = 0;
-		unsigned trX = 0; // tecture rect x
-		unsigned trY = 0; // texture rect y
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		int trX = 0; // tecture rect x
+		int trY = 0; // texture rect y
 		bool collision = false;
 		short type = 0;
 
@@ -184,7 +206,7 @@ void TileMap::loadFile(const std::string file_name)
 
 		// Tiles
 		this->gridSizeF = static_cast<float>(gridSize);
-		this->gridSizeU = gridSize;
+		this->gridSizeI = gridSize;
 		this->maxSizeGrid.x = size.x;
 		this->maxSizeGrid.y = size.y;
 		this->layers = layers;
@@ -192,16 +214,16 @@ void TileMap::loadFile(const std::string file_name)
 
 		this->clear();
 
-		this->map.resize(this->maxSizeGrid.x, std::vector< vector<Tile*> >());
-		for (size_t x = 0; x < this->maxSizeGrid.x; x++)
+		this->map.resize(this->maxSizeGrid.x, std::vector< vector< vector <Tile*> > >());
+		for (int x = 0; x < this->maxSizeGrid.x; x++)
 		{
-			for (size_t y = 0; y < this->maxSizeGrid.y; y++)
+			for (int y = 0; y < this->maxSizeGrid.y; y++)
 			{
-				this->map[x].resize(this->maxSizeGrid.y, vector<Tile*>());
+				this->map[x].resize(this->maxSizeGrid.y, vector< vector<Tile*> >());
 
-				for (size_t z = 0; z < this->layers; z++)
+				for (int z = 0; z < this->layers; z++)
 				{
-					this->map[x][y].resize(this->layers, NULL);
+					this->map[x][y].resize(this->layers, vector<Tile*>());
 				}
 			}
 		}
@@ -209,10 +231,10 @@ void TileMap::loadFile(const std::string file_name)
 		if (!this->tileSheet.loadFromFile(texture_file))// find texture
 			cout << "ERROR::TILEMAP::FAILED TO LOAD TILESHEET::FILENAME:" << texture_file << endl;
 
-		// load all tiles
+		// load all tiles from text file
 		while (in_file >> x >> y >> z >> trX >> trY >> collision >> type)
 		{
-			this->map[x][y][z] = new Tile(x, y, gridSizeF,this->tileSheet, sf::IntRect(trX, trY, this->gridSizeU, this->gridSizeU), collision, type);
+			this->map[x][y][z].push_back(new Tile(x, y, gridSizeF,this->tileSheet, sf::IntRect(trX, trY, this->gridSizeI, this->gridSizeI), collision, type));
 		}
 	}
 	else
@@ -251,25 +273,25 @@ void TileMap::updateCollision(Entity* entity, const float& dt) // VERY IMPORTANT
 	/* Tiles */
 	this->layer = 0;
 
-	this->fromX = entity->getGridPosition(this->gridSizeU).x - 20; // - 2 to the left
+	this->fromX = entity->getGridPosition(this->gridSizeI).x - 20; // - 2 to the left
 	if (this->fromX < 0)
 		this->fromX = 0;
 	else if (this->fromX > this->maxSizeGrid.x)
 		this->fromX = this->maxSizeGrid.x;
 
-	this->toX = entity->getGridPosition(this->gridSizeU).x + 20;
+	this->toX = entity->getGridPosition(this->gridSizeI).x + 20;
 	if (this->toX < 0)
 		this->toX = 0;
 	else if (this->toX > this->maxSizeGrid.x)
 		this->toX = this->maxSizeGrid.x;
 
-	this->fromY = entity->getGridPosition(this->gridSizeU).y - 10; // - 2 to the left
+	this->fromY = entity->getGridPosition(this->gridSizeI).y - 10; // - 2 to the left
 	if (this->fromY < 0)
 		this->fromY = 0;
 	else if (this->fromY > this->maxSizeGrid.y)
 		this->fromY = this->maxSizeGrid.y;
 
-	this->toY = entity->getGridPosition(this->gridSizeU).y + 10;
+	this->toY = entity->getGridPosition(this->gridSizeI).y + 10;
 	if (this->toY < 0)
 		this->toY = 0;
 	else if (this->toY > this->maxSizeGrid.y)
@@ -277,60 +299,64 @@ void TileMap::updateCollision(Entity* entity, const float& dt) // VERY IMPORTANT
 
 
 
-	for (size_t x = fromX; x < this->toX; x++)
+	for (int x = fromX; x < this->toX; x++)
 	{
-		for (size_t y = fromY; y < this->toY; y++)
+		for (int y = fromY; y < this->toY; y++)
 		{
-			FloatRect playerBounds = entity->getGlobalBounds();
-			FloatRect wallBounds = this->map[x][y][this->layer]->getGlobalBounds();
-			FloatRect nextPos = entity->getNextPosBounds(dt);
-
-			if (this->map[x][y][this->layer]->getCollision() && this->map[x][y][this->layer]->intersects(nextPos)) // check intersects w/ player
+			for (size_t k = 0; k < this->map[x][y][this->layer].size(); k++)
 			{
-				//std::cout << "collsion" << endl; // when player touches red tiles then print collision
 
-				// Collision of bottom of COLLSION BLOCK
-				if (playerBounds.top < wallBounds.top
-					&& playerBounds.top + playerBounds.height < wallBounds.top + wallBounds.height
-					&& playerBounds.left < wallBounds.left + wallBounds.width
-					&& playerBounds.left + playerBounds.width > wallBounds.left
-					)
+				FloatRect playerBounds = entity->getGlobalBounds();
+				FloatRect wallBounds = this->map[x][y][this->layer][k]->getGlobalBounds();
+				FloatRect nextPos = entity->getNextPosBounds(dt);
+
+				if (this->map[x][y][this->layer][k]->getCollision() && this->map[x][y][this->layer][k]->intersects(nextPos)) // check intersects w/ player
 				{
-					entity->resetVelocityY();
-					entity->setPosition(playerBounds.left, wallBounds.top - playerBounds.height);
-				}
-				// collision of top of COLLSION BLOCK
-				else if (playerBounds.top > wallBounds.top
-					&& playerBounds.top + playerBounds.height > wallBounds.top + wallBounds.height
-					&& playerBounds.left < wallBounds.left + wallBounds.width
-					&& playerBounds.left + playerBounds.width > wallBounds.left
-					)
-				{
-					entity->resetVelocityY();
-					entity->setPosition(playerBounds.left, wallBounds.top + wallBounds.height);
-				}
+					//std::cout << "collsion" << endl; // when player touches red tiles then print collision
 
-				//// collision of right of COLLSION BLOCK
-				//if (playerBounds.left < wallBounds.left
-				//	&& playerBounds.left + playerBounds.width < wallBounds.left + wallBounds.width
-				//	&& playerBounds.top < wallBounds.top + wallBounds.height
-				//	&& playerBounds.top + playerBounds.height > wallBounds.top
-				//	)
-				//{
-				//	entity->resetVelocityX();
-				//	entity->setPosition(wallBounds.left - playerBounds.width, playerBounds.top);
-				//}
+					// Collision of bottom of COLLSION BLOCK
+					if (playerBounds.top < wallBounds.top
+						&& playerBounds.top + playerBounds.height < wallBounds.top + wallBounds.height
+						&& playerBounds.left < wallBounds.left + wallBounds.width
+						&& playerBounds.left + playerBounds.width > wallBounds.left
+						)
+					{
+						entity->resetVelocityY();
+						entity->setPosition(playerBounds.left, wallBounds.top - playerBounds.height);
+					}
+					// collision of top of COLLSION BLOCK
+					else if (playerBounds.top > wallBounds.top
+						&& playerBounds.top + playerBounds.height > wallBounds.top + wallBounds.height
+						&& playerBounds.left < wallBounds.left + wallBounds.width
+						&& playerBounds.left + playerBounds.width > wallBounds.left
+						)
+					{
+						entity->resetVelocityY();
+						entity->setPosition(playerBounds.left, wallBounds.top + wallBounds.height);
+					}
 
-				//// collision of left of COLLSION BLOCK
-				//else if (playerBounds.left > wallBounds.left
-				//	&& playerBounds.left + playerBounds.width > wallBounds.left + wallBounds.width
-				//	&& playerBounds.top < wallBounds.top + wallBounds.height
-				//	&& playerBounds.top + playerBounds.height > wallBounds.top
-				//	)
-				//{
-				//	entity->resetVelocityX();
-				//	entity->setPosition(wallBounds.left + wallBounds.width, playerBounds.top);
-				//}
+					//	// collision of right of COLLSION BLOCK
+					//	if (playerBounds.left < wallBounds.left
+					//		&& playerBounds.left + playerBounds.width < wallBounds.left + wallBounds.width
+					//		&& playerBounds.top < wallBounds.top + wallBounds.height
+					//		&& playerBounds.top + playerBounds.height > wallBounds.top
+					//		)
+					//	{
+					//		entity->resetVelocityX();
+					//		entity->setPosition(wallBounds.left - playerBounds.width, playerBounds.top);
+					//	}
+
+					//	// collision of left of COLLSION BLOCK
+					//	else if (playerBounds.left > wallBounds.left
+					//		&& playerBounds.left + playerBounds.width > wallBounds.left + wallBounds.width
+					//		&& playerBounds.top < wallBounds.top + wallBounds.height
+					//		&& playerBounds.top + playerBounds.height > wallBounds.top
+					//		)
+					//	{
+					//		entity->resetVelocityX();
+					//		entity->setPosition(wallBounds.left + wallBounds.width, playerBounds.top);
+					//	}
+				}
 			}
 		}
 	}
@@ -341,75 +367,92 @@ void TileMap::update()
 {
 }
 
-void TileMap::render(sf::RenderTarget& target, Entity* entity)
+void TileMap::render(sf::RenderTarget& target, const Vector2i& gridPos)
 {
 
-	if (entity)
+	this->layer = 0;
+
+	this->fromX = gridPos.x - 20; // - 2 to the left
+	if (this->fromX < 0)
+		this->fromX = 0;
+	else if (this->fromX > this->maxSizeGrid.x)
+		this->fromX = this->maxSizeGrid.x;
+
+	this->toX = gridPos.x + 20;
+	if (this->toX < 0)
+		this->toX = 0;
+	else if (this->toX > this->maxSizeGrid.x)
+		this->toX = this->maxSizeGrid.x;
+
+	this->fromY = gridPos.y - 10; // - 2 to the left
+	if (this->fromY < 0)
+		this->fromY = 0;
+	else if (this->fromY > this->maxSizeGrid.y)
+		this->fromY = this->maxSizeGrid.y;
+
+	this->toY = gridPos.y + 10;
+	if (this->toY < 0)
+		this->toY = 0;
+	else if (this->toY > this->maxSizeGrid.y)
+		this->toY = this->maxSizeGrid.y;
+
+	for (int x = fromX; x < this->toX; x++)
 	{
-		this->layer = 0;
-
-		this->fromX = entity->getGridPosition(this->gridSizeU).x - 20; // - 2 to the left
-		if (this->fromX < 0)
-			this->fromX = 0;
-		else if (this->fromX > this->maxSizeGrid.x)
-			this->fromX = this->maxSizeGrid.x;
-
-		this->toX = entity->getGridPosition(this->gridSizeU).x + 20;
-		if (this->toX < 0)
-			this->toX = 0;
-		else if (this->toX > this->maxSizeGrid.x)
-			this->toX = this->maxSizeGrid.x;
-
-		this->fromY = entity->getGridPosition(this->gridSizeU).y - 10; // - 2 to the left
-		if (this->fromY < 0)
-			this->fromY = 0;
-		else if (this->fromY > this->maxSizeGrid.y)
-			this->fromY = this->maxSizeGrid.y;
-
-		this->toY = entity->getGridPosition(this->gridSizeU).y + 10;
-		if (this->toY < 0)
-			this->toY = 0;
-		else if (this->toY > this->maxSizeGrid.y)
-			this->toY = this->maxSizeGrid.y;
-
-		for (size_t x = fromX; x < this->toX; x++)
+		for (int y = fromY; y < this->toY; y++)
 		{
-			for (size_t y = fromY; y < this->toY; y++)
+			for (size_t k = 0; k < this->map[x][y][this->layer].size(); k++)
 			{
-				this->map[x][y][this->layer]->render(target);
-
-				if (this->map[x][y][this->layer]->getCollision())
+				if (this->map[x][y][this->layer][k]->getType() == TileTypes::OVERTILE)
 				{
-					this->collisionBox.setPosition(this->map[x][y][this->layer]->getPosition());
+					this->queueRenderStack.push(this->map[x][y][this->layer][k]);
+				}
+
+				else
+				{
+					this->map[x][y][this->layer][k]->render(target);
+				}
+		
+				if (this->map[x][y][this->layer][k]->getCollision())
+				{
+					this->collisionBox.setPosition(this->map[x][y][this->layer][k]->getPosition());
 					target.draw(this->collisionBox);
 				}
 			}
 		}
 	}
 
-	else
-	{
-		for (auto& x : this->map)
-		{
-			for (auto& y : x)
-			{
-				for (auto* z : y)
-				{
-					if (z != NULL)
-					{
-						z->render(target);
+	//else
+	//{
+	//	for (auto& x : this->map)
+	//	{
+	//		for (auto& y : x)
+	//		{
+	//			for (auto& z : y)
+	//			{
+	//				for (auto* k : z)
+	//				{ 
+	//					k->render(target);
 
-						if (z->getCollision())
-						{
-							this->collisionBox.setPosition(z->getPosition());
-							target.draw(this->collisionBox);
-						}
-					}
-				}
-			}
-		}
+	//					if (k->getCollision())
+	//					{
+	//						this->collisionBox.setPosition(k->getPosition());
+	//						target.draw(this->collisionBox);
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+}
+
+void TileMap::queueRender(RenderTarget& target)
+{
+	while (!this->queueRenderStack.empty())
+	{
+		queueRenderStack.top()->render(target);
+
+		queueRenderStack.pop();
 	}
-	
 }
 
 

@@ -73,8 +73,8 @@ void GameState::initPlayer()
 
 void GameState::initTileMap()
 {
-	this->tileMap = new TileMap(this->stateData->gridSize, 40, 40, "Textures/tile_castle.png");
-	this->tileMap->loadFile("text2.slmp");
+	this->tileMap = new TileMap(this->stateData->gridSize, 160, 40, "Textures/tile_castle.png");
+	this->tileMap->loadFile("text3.slmp");
 	//this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
 	//this->tileMap->loadFile("text.slmp");
 }
@@ -210,7 +210,7 @@ void GameState::updateCollision()
 		this->player->resetVelocityY();
 		this->player->setPosition(
 			this->player->getPosition().x,
-			this->window->getSize().y - 0.85*this->player->getGlobalBounds().height
+			this->window->getSize().y - 0.85f*this->player->getGlobalBounds().height
 		);
 		isOnGround = true;
 		cout << "\t\t" << isOnGround;
@@ -231,11 +231,11 @@ void GameState::update(const float& dt)
 
 	if (!this->paused) // pause game state
 	{
-		this->updateView(dt);
-		this->updatePlayerInput(dt);
 		std::cout << "\r\t\t\t\t\t\t\t Currently in Game State";
+		this->updateView(dt);
 
 		this->updateTileMap(dt); // tile collision
+		this->updatePlayerInput(dt);
 		this->updatePlayer(dt);
 		this->updateCombat();
 		//this->updateCollision();
@@ -267,12 +267,13 @@ void GameState::render(RenderTarget* target)
 	this->renderTexture.clear();
 
 	this->renderTexture.setView(this->view);
-//	this->renderWorld(); // just the bg
+	this->renderWorld(); // just the bg
 	
 	
 	//target->setView(this->view);
-	this->tileMap->render(this->renderTexture, this->player); // render tile under player
+	this->tileMap->render(this->renderTexture, this->player->getGridPosition(static_cast<int>(this->stateData->gridSize))); // render tile under player
 	this->player->render(this->renderTexture); // render player over tile
+	this->tileMap->queueRender(this->renderTexture);
 	
 	if (this->paused) // pause menu render
 	{

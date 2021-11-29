@@ -11,13 +11,14 @@ class TileMap
 {
 private:
 	float gridSizeF;	// float
-	unsigned gridSizeU; // unsigned
+	int gridSizeI;		// int
+	unsigned layers;
 
-	sf::Vector2u maxSizeGrid; // of the grid
+	sf::Vector2i maxSizeGrid; // of the grid
 	sf::Vector2f maxSizeWorld; // of the world
 
-	unsigned layers;
-	vector< vector< vector <Tile*> > > map; // x y z
+	vector< vector< vector <vector <Tile*> > > > map; // x y z k
+	stack<Tile*> queueRenderStack;
 
 	// init texture file locator
 	string textureFile;		
@@ -29,15 +30,16 @@ private:
 	void clear();
 
 public:
-	TileMap(float gridSize, unsigned width, unsigned height, std::string texture_file);
+	TileMap(float gridSize, int width, int height, std::string texture_file);
 	virtual ~TileMap();
 
 	// Accessors
 	const sf::Texture* getTileSheet() const;
+	const int getLayerSize(const int x, const int y, const int layer) const;
 
 	// Mutators
-	void addTile(const unsigned x, const unsigned y, const unsigned z, const sf::IntRect& tex_rect, const bool collision, const short type);
-	void removeTile(const unsigned x, const unsigned y, const unsigned z);
+	void addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const bool collision, const short type);
+	void removeTile(const int x, const int y, const int z);
 
 	// Save Editor to game
 	void saveFile(const std::string file_name);
@@ -48,6 +50,7 @@ public:
 	void update();
 
 	// render
-	void render(sf::RenderTarget& target, Entity* entity = NULL);
+	void render(RenderTarget& target, const Vector2i& gridPos);
+	void queueRender(RenderTarget& target);
 };
 
