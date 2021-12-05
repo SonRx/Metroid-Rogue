@@ -25,15 +25,18 @@
     <Filter Include="Map">
       <UniqueIdentifier>{e2f9fdb7-99ad-4cd5-a603-c6ea80bcd4cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlayerAssets">
+      <UniqueIdentifier>{056ba991-978b-4fb0-bbb5-d96f055867e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EnemyAssets">
+      <UniqueIdentifier>{47d8a5e3-29eb-498c-aa6d-4448948a799a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Metroid Rogue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameState.cpp">
@@ -50,9 +53,6 @@
     </ClCompile>
     <ClCompile Include="EditorState.cpp">
       <Filter>States</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Entity</Filter>
     </ClCompile>
     <ClCompile Include="PauseMenu.cpp">
       <Filter>GUI</Filter>
@@ -78,12 +78,30 @@
     <ClCompile Include="Hitbox.cpp">
       <Filter>Entity</Filter>
     </ClCompile>
+    <ClCompile Include="Skills.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>PlayerAssets</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>PlayerAssets</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerGUI.cpp">
+      <Filter>PlayerAssets</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>EnemyAssets</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationComponent.cpp">
+      <Filter>EnemyAssets</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementComponent.cpp">
+      <Filter>EnemyAssets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameState.h">
@@ -100,9 +118,6 @@
     </ClInclude>
     <ClInclude Include="EditorState.h">
       <Filter>States</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Entity</Filter>
     </ClInclude>
     <ClInclude Include="PauseMenu.h">
       <Filter>GUI</Filter>
@@ -127,6 +142,27 @@
     </ClInclude>
     <ClInclude Include="Hitbox.h">
       <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Skills.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>PlayerAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>PlayerAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerGUI.h">
+      <Filter>PlayerAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>EnemyAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponent.h">
+      <Filter>EnemyAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementComponent.h">
+      <Filter>EnemyAssets</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

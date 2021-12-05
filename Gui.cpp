@@ -343,9 +343,7 @@ void gui::TextureSelector::update(const sf::Vector2i& mousePosWindow, const floa
 
 		if (this->bounds.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePosWindow)))
 		{
-			this->active = true;
-
-			// 
+			this->active = true; 
 			this->mousePosGrid.x = (mousePosWindow.x - static_cast<int>(this->bounds.getPosition().x)) / static_cast<unsigned>(this->gridSize);
 			this->mousePosGrid.y = (mousePosWindow.y - static_cast<int>(this->bounds.getPosition().y)) / static_cast<unsigned>(this->gridSize);
 
@@ -374,3 +372,60 @@ void gui::TextureSelector::render(sf::RenderTarget& target)
 
 	this->hide_btn->render(target);
 }
+
+/* Progress Bar*///////////////////////////////////
+gui::ProgressBar::ProgressBar(float lx, float ly, float lwidth, float lheight, int max_Value, sf::Color inner_color, unsigned character_size, sf::Font* font)
+{
+	float width = lwidth;	//300.f;
+	float height = lheight;	// 25.f;
+	float x = lx;			// 20.f;
+	float y = ly;			//20.f;
+
+	this->maxWidth = width;
+	this->maxValue = max_Value;
+
+	//Init player GUI
+	this->back.setSize(sf::Vector2f(width, height));
+	this->back.setFillColor(sf::Color(50, 50, 50, 200));
+	this->back.setPosition(Vector2f(x, y));
+
+	this->inner = this->back;
+	this->inner.setFillColor(inner_color);
+
+	// init texts
+	if (font) {
+		text.setFont(*font);
+		//hpBarText.setString("HP: ");
+		text.setCharacterSize(18);
+		text.setFillColor(sf::Color::Red);
+		text.setStyle(sf::Text::Bold);
+		text.setPosition(Vector2f(22.f, y));
+	}
+}
+
+gui::ProgressBar::~ProgressBar()
+{
+}
+
+void gui::ProgressBar::update(const int current_value, const int max_value)
+{
+	float percent = static_cast<float>(current_value) * 27.3f / static_cast<float>(max_value);
+
+	this->inner.setSize(
+		sf::Vector2f(
+			static_cast<float>(std::floor(max_value * percent)),
+			this->inner.getSize().y
+		)
+	);
+
+	this->barString = std::to_string(current_value) + " / " + std::to_string(max_value);
+	this->text.setString(this->barString);
+}
+
+void gui::ProgressBar::render(sf::RenderTarget& target)
+{
+	target.draw(this->back);
+	target.draw(this->inner);
+	target.draw(this->text);
+}
+

@@ -3,14 +3,18 @@
 #include "PauseMenu.h"
 #include "TileMap.h"
 #include "Level.h"
+#include "PlayerGUI.h"
+#include "Enemy.h"
 
 // Forward Declare
 class PauseMenu;
 class Player;
 class TileMap;
+class PlayerGUI;
 class sf::View;
 class sf::Font;
 class sf::RenderTexture;
+class Enemy;
 
 class GameState :
     public State
@@ -18,7 +22,12 @@ class GameState :
 private:
     // init player
     Player* player;
+    PlayerGUI* playerGUI;
+
     bool isOnGround;
+
+    // init Enemy
+    Enemy* testEnemy;
 
     // init font
     Font font;
@@ -35,6 +44,8 @@ private:
 
     // init camera view
     sf::View view;
+    sf::Vector2i viewGridPos;
+
     sf::RenderTexture renderTexture;
     sf::Sprite renderSprite;
 
@@ -50,6 +61,7 @@ private:
     void initWorld();
     void initGUI();
     void initPlayer();
+    void initPlayerGUI();
     void initTileMap();
 
 public:
@@ -65,6 +77,7 @@ public:
     void updatePause();
     void updateTileMap(const float& dt);
     void updatePlayer(const float& dt);
+    void updatePlayerGUI(const float& dt);
     void updateCombat();
     void updateCollision();
     void update(const float& dt);

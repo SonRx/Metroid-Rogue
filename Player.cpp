@@ -8,6 +8,15 @@ void Player::initVariables()
 	this->shootCooldown = this->shootCooldownMax;
 	this->damageCooldownMax = 10;
 	this->damageCooldown = this->damageCooldownMax;
+
+
+	// firerate
+	this->keytime = 0.f;
+	this->keytimeMax = 15.f; // SERVES AS THE PLAYER FIRERATE
+
+	// jumprate
+	this->jumptime = 0.f;
+	this->jumptimeMax = 75.f;
 }
 
 void Player::initTexture()
@@ -16,17 +25,6 @@ void Player::initTexture()
 	{
 		std::cout << "ERROR::PLAYER::Could not load the player_sheet.png!" << "\n";
 	}
-}
-
-void Player::initGUI()
-{
-	//Init player GUI
-	this->playerHpBar.setSize(sf::Vector2f(300, 25));
-	this->playerHpBar.setFillColor(sf::Color::Green);
-	this->playerHpBar.setPosition(Vector2f(20, 20));
-
-	this->playerHpBarBack = this->playerHpBar;
-	this->playerHpBarBack.setFillColor(sf::Color(25, 25, 25, 200));
 }
 
 void Player::initWeapon()
@@ -44,7 +42,8 @@ void Player::initSprite()
 	this->sprite.setTextureRect(currentFrame);
 	this->sprite.setScale(3.f, 3.f);
 
-	this->sprite.setPosition(960,540);
+	//this->sprite.setPosition(960,540);
+	this->sprite.setPosition(400, 1000);
 }
 
 void Player::initAnimations()
@@ -64,14 +63,12 @@ void Player::initPhysics()
 }
 
 Player::Player()
-	:level(1), exp(0), expN(50), hp(10),
-	hpMax(10), score(0), damage(1), damageMax(2)  // DEFAULT CONSTRUCTORS
 {
 	//this->createHitbox(this->sprite, 25.f, 25.f, 75.f, 115.f);
 	this->createHitbox(this->sprite, 25.f, 25.f, 70.f, 125.f);
+	this->createSkills(1);
 	this->initVariables();
 	this->initTexture();
-	this->initGUI();
 	this->initWeapon();
 	this->initSprite();
 	this->initAnimations();
@@ -97,6 +94,40 @@ const bool& Player::getAnimSwitch()
 	return anim_switch;
 }
 
+
+Skills* Player::getSkills()
+{
+	return this->skills;
+}
+
+const bool Player::getKeytime()
+{
+	if (this->keytime >= this->keytimeMax)
+	{
+		this->keytime = 0.f;
+		return true;
+	}
+	return false;
+}
+
+const bool Player::getJumpTime()
+{
+	if (this->jumptime >= this->jumptimeMax)
+	{
+		this->jumptime = 0.f;
+		return true;
+	}
+	return false;
+}
+
+void Player::updateKeyTime(const float& dt)
+{
+	if (this->keytime < this->keytimeMax)
+		this->keytime += 100.f * dt;
+
+	if (this->jumptime < this->jumptimeMax)
+		this->jumptime += 100.f * dt;
+}
 
 // Modifiers
 void Player::setPosition(const float x, const float y)
@@ -153,14 +184,42 @@ void Player::moveHori (const float dir) {
 	}
 }
 
+// HP implementation
+void Player::loseHP(const int hp)
+{
+	this->skills->loseHP(hp);
+}
+
+//void Player::loseEXP(const int exp)
+//{
+//	this->skills->exp -= exp;
+//
+//	if (this->skills->exp < 0)
+//		this->skills->exp = 0;
+//}
+
+void Player::gainHP(const int hp)
+{
+	this->skills->gainHP(hp);
+}
+
+//void Player::gainEXP(const int exp)
+//{
+//	this->skills->gainExp(exp);
+//}
+
 void Player::updatePhysics()
 {
 	//Gravity
-	this->velocity.y += 1.0 * this->acceleration;
-	if (std::abs(this->velocity.x) > this->velocityMaxY)
-	{
-		this->velocity.y = this->velocityMaxY * ((this->velocity.y < 0) ? -1 : 1);
-	}
+	/*this->velocity.y += 1.0 * this->acceleration;
+	if (this->velocity.y = 2) {
+		if (std::abs(this->velocity.x) >= this->velocityMaxY)
+		{
+			this->velocity.y = this->velocityMaxY * ((this->velocity.y < 0) ? -1 : 1);
+		}
+	}*/
+	//system("cls");
+	//cout << velocity.y << " " << velocityMaxY << " " << direction << "\n";
 
 	//Deceleration
 	this->velocity *= this->drag;
@@ -187,6 +246,7 @@ void Player::updateMovement()
 			this->direction = PLAYER_DIRECTION::LEFT;//-1
 
 			this->moveHori(this->direction);
+			this->moveVert(-1.f);
 
 			if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
 				this->animState = PLAYER_ANIMATION_STATES::RUNNING;
@@ -198,19 +258,23 @@ void Player::updateMovement()
 			this->direction = PLAYER_DIRECTION::RIGHT;//1
 
 			this->moveHori(this->direction);
+			this->moveVert(-1.f);
 
 			if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
 				this->animState = PLAYER_ANIMATION_STATES::RUNNING;
 
 			cout << "D";
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-		{
-			this->moveVert(this->direction);
-		}
 	}
 	else {
 		cout << "AD";
+	}
+	if (!(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)))
+	{
+		this->moveVert(-1.f);
+
+		if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
+			this->animState = PLAYER_ANIMATION_STATES::IDLE;
 	}
 
 	if (this->isOnGround) {
@@ -219,7 +283,7 @@ void Player::updateMovement()
 
 		//static bool canJump;//basically a trigger disconnect, if this wasnt here the player could fly forever
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) // Jump
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))// && getJumpTime()) // Jump
 		{ // STILL WORKING ON THE JUMPING
 			if ((this->jumps <= 2) && canJump) {//decrements the jumps but treats as bool, when zero the player cant jumps anymore
 				this->jumps--;
@@ -244,7 +308,7 @@ void Player::updatePlayerCenter()
 
 void Player::updateWeaponv2() //  SHOOOOOT
 {
-	if (Mouse::isButtonPressed(Mouse::Left)) // left click to shoot
+	if (Mouse::isButtonPressed(Mouse::Left) && getKeytime()) // left click to shoot
 	{
 		this->laser1.push_back(Weapon(this->laser1Texture["WEAPON"], // texture
 		this->playerCenter, // position of player
@@ -264,12 +328,6 @@ void Player::updateWeaponInput()
 		this->laser1[i].update();
 	}
 }
-
-void Player::updateGUI()
-{
-	this->playerHpBar.setSize(sf::Vector2f(300, this->playerHpBar.getSize().y));
-}
-
 
 void Player::setupPlayerSprite (float incr, float top, float limit, float time) {
 
@@ -310,10 +368,14 @@ void Player::updateAnimations()
 	}
 }
 
-void Player::update(const float& dt)
+void Player::update(const float& dt, sf::Vector2f& mouse_pos_view)
 {
+	//this->skills->update();
+	//system("cls"); // clears anything before it
+	//cout << this->skills->debugPrint() << "\n";
+	this->updateKeyTime(dt);
+
 	this->updateMovement();
-	this->updateGUI();
 	this->updatePlayerCenter();
 	this->updateAnimations();
 	this->updatePhysics();
@@ -322,7 +384,7 @@ void Player::update(const float& dt)
 	this->hitbox->update();
 }
 
-void Player::render(sf::RenderTarget& target)
+void Player::render(sf::RenderTarget& target, const bool show_hitBox)
 {
 	// render laser
 	for (size_t i = 0; i < this->laser1.size(); i++)
@@ -334,9 +396,10 @@ void Player::render(sf::RenderTarget& target)
 	target.draw(this->sprite);
 
 	// RenderGUI
-	target.draw(this->playerHpBarBack);
-	target.draw(this->playerHpBar);
+	//target.draw(this->playerHpBarBack);
+	//target.draw(this->playerHpBar);
 
 	// hitbox
-	this->hitbox->render(target);
+	if (show_hitBox)
+		this->hitbox->render(target);
 }

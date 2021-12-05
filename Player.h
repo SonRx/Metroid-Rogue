@@ -23,17 +23,9 @@ private:
 	map<string, Texture*> laser1Texture;
 	vector<Weapon> laser1;
 
-	// Player GUI
-	RectangleShape playerHpBar;
-	RectangleShape playerHpBarBack;
-
 	//Player special timing
 	int shootCooldown, shootCooldownMax;; // Fire Rate
 	int damageCooldown, damageCooldownMax; // how long until you can take dmg after taking dmg
-
-	//Player attributes
-	int level, exp, expN, hp, hpMax; // expN is exp until next level up
-	int score, damage, damageMax; // ALL DEFAULT CONSTRUCTORS
 
 	//bool moving;
 	sf::Clock animationTimer;
@@ -42,6 +34,10 @@ private:
 	short animState;
 	sf::IntRect currentFrame;
 	bool animationSwitch;
+
+	float keytime, keytimeMax;
+	float jumptime, jumptimeMax; // initialized together with keytime
+
 
 	// Physics
 	sf::Vector2f velocity;
@@ -63,27 +59,29 @@ private:
 	// Core CONSTRUCTORS
 	void initVariables();
 	void initTexture();
-	void initGUI();
 	void initWeapon();
 	void initSprite();
 	void initAnimations();
 	void initPhysics(); // these all go in the player constructor in declared in line 35.
 
 public:					
-	
+	/* Constructor / destructor */
 	Player(); // constructor // go to player.cpp for the implemenations of the init variables.
 	virtual ~Player(); // destructor
 
-	//Accessors
+	/* Accessors */
 	const bool& getAnimSwitch();
 	const sf::Vector2f& getPosition() const { return this->sprite.getPosition(); }
 	const sf::FloatRect getGlobalBounds() const { return this->sprite.getGlobalBounds(); }
 	std::vector<Weapon>& getLasers() { return this->laser1; }
 	const bool& getCanJump() const { return this->canJump; }
+	Skills* getSkills();
 
+	const bool getKeytime();
+	const bool getJumpTime();
+	virtual void updateKeyTime(const float& dt);
 
-
-	//Modifiers
+	/* Modifiers */
 	void setPosition(const float x, const float y);
 
 	virtual void resetVelocity();
@@ -96,20 +94,24 @@ public:
 	void moveVert (const float dir);//seperate movement controls to make life easier
 	void moveHori (const float dir);//seperate movement controls to make life easier
 
-	//update functions
+	// HP
+	void loseHP(const int hp);
+	//void loseEXP(const int exp);
+	void gainHP(const int hp);
+	//void gainEXP(const int exp);
+
+	/* update functions */
 	void updatePhysics();
 	void updateMovement();
 	void updatePlayerCenter();
 	void updateWeaponv2();
 	void updateWeaponInput();
-	void updateGUI();
 	void setupPlayerSprite (float incr, float top, float limit, float time);//little function to make things easier
 	void updateAnimations();
-	void update(const float& dt);
+	void update(const float& dt, sf::Vector2f& mouse_pos_view);
 
 	// Render
-	//void renderGUI();
-	void render(sf::RenderTarget& target);
+	void render(sf::RenderTarget& target, const bool show_hitBox = false);
 };
 
 

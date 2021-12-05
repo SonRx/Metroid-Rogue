@@ -31,11 +31,15 @@ private:
 
 public:
 	TileMap(float gridSize, int width, int height, std::string texture_file);
+	TileMap(const std::string file_name);
 	virtual ~TileMap();
 
 	// Accessors
 	const sf::Texture* getTileSheet() const;
 	const int getLayerSize(const int x, const int y, const int layer) const;
+	const sf::Vector2i& getMaxSizeGrid() const;
+	const sf::Vector2f& getMaxSizeWorld() const;
+	const bool isTileEmpty(const int x, const int y, const int z) const;
 
 	// Mutators
 	void addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const bool collision, const short type);
@@ -50,7 +54,7 @@ public:
 	void update();
 
 	// render
-	void render(RenderTarget& target, const Vector2i& gridPos);
+	void render(RenderTarget& target, const Vector2i& gridPos, const bool show_collision = false);
 	void queueRender(RenderTarget& target);
 };
 

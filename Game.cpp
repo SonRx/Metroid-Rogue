@@ -79,28 +79,6 @@ void Game::initStateData()
 	this->stateData.gridSize = this->gridSize;
 }
 
-//void Game::initWorld()
-//{
-//	if (!this->worldBgTex.loadFromFile("Textures/dung.jpg"))  // LOOK IN TEXTURE FOLDER @ B ..\Metro Rogue\textures
-//		std::cout << "ERROR::GAME::COULD NOT LOAD BG THEME" << "\n";
-//	this->worldBg.setTexture(this->worldBgTex); // worldBgTex is the object of class Texture created in game.h
-//	this->worldBg.scale(.416f, .722f); // .setTexture and .scale is the functions of class texture
-//}
-
-//void Game::initGUI()
-//{
-//	this->font.loadFromFile("Fonts/PixellettersFull.ttf");
-//}
-
-//void Game::renderWorld() // called by render()
-//{
-//	this->window->draw(this->worldBg);
-//}
-
-//void Game::initPlayer()
-//{
-//	this->player = new Player();
-//}
 
 Game::Game() // constructor
 {
@@ -109,9 +87,6 @@ Game::Game() // constructor
 	this->initKeys();
 	this->initStateData();
 	this->initStates();
-	///this->initWorld();
-	//this->initGUI();
-	///this->initPlayer();
 }
 
 Game::~Game() // destructor

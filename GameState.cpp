@@ -44,6 +44,11 @@ void GameState::initView()
 void GameState::initTextures()
 {
 	this->font.loadFromFile("Fonts/Dosis-Light.ttf");
+
+	if (!this->textures["PLAYER_SHEET"].loadFromFile("Textures/player_sheet.png"))
+	{
+		throw "ERROR::GAME_STATE::COULD_NOT_LOAD_PLAYER_TEXTURE";
+	}
 }
 
 void GameState::initPauseMenu()
@@ -71,12 +76,19 @@ void GameState::initPlayer()
 	isOnGround = false;
 }
 
+void GameState::initPlayerGUI()
+{
+	this->playerGUI = new PlayerGUI(this->player);
+}
+
 void GameState::initTileMap()
 {
-	this->tileMap = new TileMap(this->stateData->gridSize, 160, 40, "Textures/tile_castle.png");
-	this->tileMap->loadFile("text3.slmp");
+	//this->tileMap = new TileMap(this->stateData->gridSize, 160, 40, "Textures/tile_castle.png");
+	//this->tileMap->loadFile("text3.slmp");
 	//this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
 	//this->tileMap->loadFile("text.slmp");
+
+	this->tileMap = new TileMap("text3.slmp");
 }
 
 // constructor / destructor
@@ -92,22 +104,56 @@ GameState::GameState(StateData* state_data)
 	this->initWorld();
 	this->initGUI();
 	this->initPlayer();
+	this->initPlayerGUI();
 	this->initTileMap();
+						//960,540
+	this->testEnemy = new Enemy(400.f, 1000.f, this->textures["PLAYER_SHEET"]);
+
 }
 
 GameState::~GameState()
 {
 	delete this->menu;
 	delete this->player;
+	delete this->playerGUI;
 	delete this->tileMap;
+	delete this->testEnemy;
 }
 
 // Update
 
 void GameState::updateView(const float& dt)
 {
-	this->view.setCenter(std::floor(this->player->getPosition().x), std::floor(this->player->getPosition().y));
+	this->view.setCenter(
+		std::floor(this->player->getPosition().x + (static_cast<float>(this->mousePosWindow.x) - static_cast<float>(this->window->getSize().x / 2)) / 8.f),
+		std::floor(this->player->getPosition().y + (static_cast<float>(this->mousePosWindow.y) - static_cast<float>(this->window->getSize().y / 2)) / 8.f));
 	//this->view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
+
+	if (this->tileMap->getMaxSizeWorld().x >= this->view.getSize().x)
+	{
+		if (this->view.getCenter().x - this->view.getSize().x / 2.f < 0.f)
+		{
+			this->view.setCenter(0.f + this->view.getSize().x / 2.f, this->view.getCenter().y);
+		}
+		else if (this->view.getCenter().x + this->view.getSize().x / 2.f >= this->tileMap->getMaxSizeWorld().x)
+		{
+			this->view.setCenter(this->tileMap->getMaxSizeWorld().x - this->view.getSize().x / 2.f, this->view.getCenter().y);
+		}
+	}
+
+	//if (this->tileMap->getMaxSizeWorld().y >= this->view.getSize().y)
+	//{
+	//	if (this->view.getCenter().y - this->view.getSize().y / 2.f < 0.f)
+	//	{
+	//		this->view.setCenter(this->view.getCenter().x, 0.f + this->view.getSize().y / 2.f);
+	//	}
+	//	else if (this->view.getCenter().y + this->view.getSize().y / 2.f > this->tileMap->getMaxSizeWorld().y)
+	//	{
+	//		this->view.setCenter(this->view.getCenter().x, this->tileMap->getMaxSizeWorld().y - this->view.getSize().y / 2.f);
+	//	}
+	//}
+	this->viewGridPos.x = static_cast<int>(this->view.getCenter().x) / static_cast<int>(this->stateData->gridSize);
+	this->viewGridPos.y = static_cast<int>(this->view.getCenter().y) / static_cast<int>(this->stateData->gridSize);
 }
 
 void GameState::updateInput(const float& dt)
@@ -181,7 +227,21 @@ void GameState::updateTileMap(const float& dt) // this replaces update collision
 
 void GameState::updatePlayer(const float& dt)
 {
-	this->player->update(dt);
+	this->player->update(dt, this->mousePosView);
+	//DEBUG
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::L) && getKeytime())
+	{
+		this->player->loseHP(1);
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::O) && getKeytime())
+	{
+		this->player->gainHP(1);
+	}
+}
+
+void GameState::updatePlayerGUI(const float& dt)
+{
+	this->playerGUI->update(dt);
 }
 
 void GameState::updateCombat()
@@ -238,7 +298,11 @@ void GameState::update(const float& dt)
 		this->updatePlayerInput(dt);
 		this->updatePlayer(dt);
 		this->updateCombat();
-		//this->updateCollision();
+		//this->updateCollision(); // updateTileMap(dt) replaced this
+		this->playerGUI->update(dt);
+
+		this->testEnemy->update(dt,this->mousePosView);
+		this->testEnemy->move(1.f, 0.f, dt);
 		
 	}
 	else // update pause menu
@@ -257,7 +321,7 @@ void GameState::renderWorld()
 
 void GameState::renderPlayer()
 {
-	this->player->render(this->renderTexture);
+	this->player->render(this->renderTexture,false);
 }
 
 void GameState::render(RenderTarget* target)
@@ -267,21 +331,30 @@ void GameState::render(RenderTarget* target)
 	this->renderTexture.clear();
 
 	this->renderTexture.setView(this->view);
-	this->renderWorld(); // just the bg
 	
 	
 	//target->setView(this->view);
-	this->tileMap->render(this->renderTexture, this->player->getGridPosition(static_cast<int>(this->stateData->gridSize))); // render tile under player
-	this->player->render(this->renderTexture); // render player over tile
+	//this->tileMap->render(this->renderTexture, this->player->getGridPosition(static_cast<int>(this->stateData->gridSize)),false); // render tile under player
+	this->tileMap->render(this->renderTexture, this->viewGridPos, false); // render tile under player
+	this->player->render(this->renderTexture, false); // render player over tile
+	this->testEnemy->render(this->renderTexture, false);
 	this->tileMap->queueRender(this->renderTexture);
+	
+
+	// Render player GUI
+	this->renderTexture.setView(this->renderTexture.getDefaultView());
+	this->playerGUI->render(this->renderTexture);
 	
 	if (this->paused) // pause menu render
 	{
-		this->renderTexture.setView(this->renderTexture.getDefaultView());
+		//this->renderTexture.setView(this->renderTexture.getDefaultView());
 		this->menu->render(this->renderTexture);
 	}
 
 	this->renderTexture.display();
+
 	this->renderSprite.setTexture(this->renderTexture.getTexture());
 	target->draw(this->renderSprite);
+	//this->renderWorld(); // just the bg
+	
 }

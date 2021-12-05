@@ -11,6 +11,7 @@ void EditorState::initVariables()
 	this->type = TileTypes::DEFAULT;
 	this->camSpeed = 750;
 	this->layer = 0;
+	this->tileAddLock = false;
 }
 
 void EditorState::initView()
@@ -157,7 +158,17 @@ void EditorState::updateEditorInput(const float& dt)
 		{
 			if (!this->textureSelector->getActive())
 			{
-				this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->textureRect, this->collision, this->type);
+				if (this->tileAddLock)
+				{
+					if (this->tileMap->isTileEmpty(this->mousePosGrid.x, this->mousePosGrid.y, 0))
+					{
+						this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->textureRect, this->collision, this->type);
+					}
+				}
+				else
+				{
+					this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->textureRect, this->collision, this->type);
+				}
 			}
 			else
 			{
@@ -196,6 +207,15 @@ void EditorState::updateEditorInput(const float& dt)
 		if (this->type > 0)
 			this->type--;
 	}
+
+	// Set lock on/ off
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::L) && getKeytime())
+	{
+		if (this->tileAddLock)
+			this->tileAddLock = false;
+		else
+			this->tileAddLock = true;
+	}
 }
 
 void EditorState::updateButtons()
@@ -226,7 +246,8 @@ void EditorState::updateGui(const float& dt)
 		<< this->mousePosGrid.x << "  " << this->mousePosGrid.y << "\n"
 		<< this->textureRect.left << " " << this->textureRect.top << "\n"
 		<< "Collision: " << this->collision << "\n" << "Type: " << this->type << "\n"
-		<< "Tiles: " << this->tileMap->getLayerSize(this->mousePosGrid.x, this->mousePosGrid.y, this->layer);
+		<< "Tiles: " << this->tileMap->getLayerSize(this->mousePosGrid.x, this->mousePosGrid.y, this->layer) << "\n"
+		<< "Tile Lock: " << this->tileAddLock;
 
 	this->cursorText.setString(ss.str());
 
@@ -237,11 +258,15 @@ void EditorState::updatePause()
 	if (this->menu->isButtonPressed("QUIT"))
 		this->endState();
 
-	if (this->menu->isButtonPressed("SAVE"))
+	if (this->menu->isButtonPressed("SAVE")) {
 		this->tileMap->saveFile("text3.slmp"); // Save to this file -> located in explorer
+		//this->tileMap->saveFile("text4.slmp");
+	}
 
-	if (this->menu->isButtonPressed("LOAD"))
+	if (this->menu->isButtonPressed("LOAD")) {
 		this->tileMap->loadFile("text3.slmp"); // loads this file into the game
+		//this->tileMap->loadFile("text4.slmp");
+	}
 }
 
 void EditorState::update(const float& dt)
@@ -301,7 +326,7 @@ void EditorState::render(RenderTarget* target)
 
 	// Render tile map with this view
 	target->setView(this->view); // Game camera
-	this->tileMap->render(*target, this->mousePosGrid);
+	this->tileMap->render(*target, this->mousePosGrid, true);
 	this->tileMap->queueRender(*target); // Tiles that render over the player
 
 	target->setView(this->window->getDefaultView());
