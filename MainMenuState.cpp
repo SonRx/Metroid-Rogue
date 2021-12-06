@@ -43,7 +43,7 @@ void MainMenuState::initFonts()
 	name.setString("Metroid Rogue\nSoftware Engineering Video Game Project\nDeveloped by team A");
 }
 
-void MainMenuState::initKeybinds()
+void MainMenuState::initkeybinds()
 {
 	std::ifstream ifs("Config/MainmenuStateKeys.ini");
 	if (ifs.is_open())
@@ -53,7 +53,7 @@ void MainMenuState::initKeybinds()
 
 		while (ifs >> key >> key2)
 		{
-			this->keyBinds[key] = this->supportedKeys->at(key2);
+			this->keybinds[key] = this->supportedKeys->at(key2);
 		}
 	}
 
@@ -83,7 +83,7 @@ MainMenuState::MainMenuState(StateData* state_data)
 	this->initVariables();
 	this->initBackground();
 	this->initFonts();
-	this->initKeybinds();
+	this->initkeybinds();
 	this->initButtons();
 }
 

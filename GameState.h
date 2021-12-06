@@ -5,6 +5,8 @@
 #include "Level.h"
 #include "PlayerGUI.h"
 #include "Enemy.h"
+#include "Rat.h"
+
 
 // Forward Declare
 class PauseMenu;
@@ -27,7 +29,8 @@ private:
     bool isOnGround;
 
     // init Enemy
-    Enemy* testEnemy;
+   // Enemy* testEnemy;             // single enemy
+    vector<Enemy*> activeEnemies; // multiple enemies
 
     // init font
     Font font;
@@ -54,7 +57,7 @@ private:
 
     //init
     void initPostRender();
-    void initKeybinds();
+    void initkeybinds();
     void initView();
     void initTextures();
     void initPauseMenu();

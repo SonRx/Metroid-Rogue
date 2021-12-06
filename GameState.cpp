@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameState.h"
 
+
 // Initialization
 
 void GameState::initPostRender()
@@ -11,7 +12,7 @@ void GameState::initPostRender()
 		this->window->getSize().x, this->window->getSize().y));
 }
 
-void GameState::initKeybinds()
+void GameState::initkeybinds()
 {
 	std::ifstream ifs("Config/GameStateKeys.ini");
 	if (ifs.is_open())
@@ -21,7 +22,7 @@ void GameState::initKeybinds()
 
 		while (ifs >> key >> key2)
 		{
-			this->keyBinds[key] = this->supportedKeys->at(key2);
+			this->keybinds[key] = this->supportedKeys->at(key2);
 		}
 	}
 
@@ -48,6 +49,11 @@ void GameState::initTextures()
 	if (!this->textures["PLAYER_SHEET"].loadFromFile("Textures/player_sheet.png"))
 	{
 		throw "ERROR::GAME_STATE::COULD_NOT_LOAD_PLAYER_TEXTURE";
+	}
+
+	if (!this->textures["RAT1_SHEET"].loadFromFile("Textures/rat1_60x64.png"))
+	{
+		throw "ERROR::GAME_STATE::COULD_NOT_LOAD_RAT1_TEXTURE";
 	}
 }
 
@@ -97,7 +103,7 @@ GameState::GameState(StateData* state_data)
 	: State(state_data)
 {
 	this->initPostRender();
-	this->initKeybinds();
+	this->initkeybinds();
 	this->initView();
 	this->initTextures();
 	this->initPauseMenu();
@@ -107,7 +113,12 @@ GameState::GameState(StateData* state_data)
 	this->initPlayerGUI();
 	this->initTileMap();
 						//960,540
-	this->testEnemy = new Enemy(400.f, 1000.f, this->textures["PLAYER_SHEET"]);
+	//this->testEnemy = new Enemy(400.f, 1000.f, this->textures["PLAYER_SHEET"]);
+	//this->activeEnemies.push_back(new Rat(200.f, 100.f, this->textures["RAT1_SHEET"]));
+	//this->activeEnemies.push_back(new Rat(500.f, 200.f, this->textures["RAT1_SHEET"]));
+	//this->activeEnemies.push_back(new Rat(600.f, 300.f, this->textures["RAT1_SHEET"]));
+	//this->activeEnemies.push_back(new Rat(400.f, 500.f, this->textures["RAT1_SHEET"]));
+	//this->activeEnemies.push_back(new Rat(200.f, 800.f, this->textures["RAT1_SHEET"]));
 
 }
 
@@ -117,7 +128,12 @@ GameState::~GameState()
 	delete this->player;
 	delete this->playerGUI;
 	delete this->tileMap;
-	delete this->testEnemy;
+	//delete this->testEnemy;
+
+	for (size_t i = 0; i < this->activeEnemies.size(); i++)
+	{
+		delete this->activeEnemies[i];
+	}
 }
 
 // Update
@@ -170,13 +186,13 @@ void GameState::updateInput(const float& dt)
 void GameState::updatePlayerInput(const float& dt)
 {
 	//Update player input
-	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("Left"))))
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("Left"))))
 		this->player->move(-1.f, 0.f);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("Right"))))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("Right"))))
 		this->player->move(1.f, 0.f);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("Up"))))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("Up"))))
 		this->player->move(0.f, -1.f);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("Down"))))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("Down"))))
 		this->player->move(0.f, 1.f);*/
 	
 	//if (sf::Event::KeyReleased && // setting movement butons
@@ -221,8 +237,13 @@ void GameState::updatePause()
 
 void GameState::updateTileMap(const float& dt) // this replaces update collision in line ~205
 {
-	this->tileMap->update();
-	this->tileMap->updateCollision(this->player, dt);
+	//this->tileMap->update();
+	this->tileMap->update(this->player, dt);
+	//this->tileMap->updateCollision(this->testEnemy, dt);
+	for (auto* i : this->activeEnemies)
+	{
+		this->tileMap->update(i, dt);
+	}
 }
 
 void GameState::updatePlayer(const float& dt)
@@ -301,8 +322,13 @@ void GameState::update(const float& dt)
 		//this->updateCollision(); // updateTileMap(dt) replaced this
 		this->playerGUI->update(dt);
 
-		this->testEnemy->update(dt,this->mousePosView);
-		this->testEnemy->move(1.f, 0.f, dt);
+		/*for (auto* i : this->activeEnemies)
+		{
+			i->update(dt, this->mousePosView);
+		}*/
+
+		//this->testEnemy->update(dt,this->mousePosView);
+		//this->testEnemy->move(1.f, 0.f, dt);
 		
 	}
 	else // update pause menu
@@ -335,9 +361,19 @@ void GameState::render(RenderTarget* target)
 	
 	//target->setView(this->view);
 	//this->tileMap->render(this->renderTexture, this->player->getGridPosition(static_cast<int>(this->stateData->gridSize)),false); // render tile under player
+
+	
+
 	this->tileMap->render(this->renderTexture, this->viewGridPos, false); // render tile under player
+
+	/*for (auto* i : this->activeEnemies)
+	{
+		i->render(this->renderTexture, false);
+	}*/
 	this->player->render(this->renderTexture, false); // render player over tile
-	this->testEnemy->render(this->renderTexture, false);
+
+	//this->testEnemy->render(this->renderTexture, false);
+
 	this->tileMap->queueRender(this->renderTexture);
 	
 

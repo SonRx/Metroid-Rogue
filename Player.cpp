@@ -16,7 +16,7 @@ void Player::initVariables()
 
 	// jumprate
 	this->jumptime = 0.f;
-	this->jumptimeMax = 75.f;
+	this->jumptimeMax = 60.f;
 }
 
 void Player::initTexture()
@@ -283,11 +283,11 @@ void Player::updateMovement()
 
 		//static bool canJump;//basically a trigger disconnect, if this wasnt here the player could fly forever
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))// && getJumpTime()) // Jump
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && getJumpTime()) // Jump
 		{ // STILL WORKING ON THE JUMPING
 			if ((this->jumps <= 2) && canJump) {//decrements the jumps but treats as bool, when zero the player cant jumps anymore
 				this->jumps--;
-				this->moveVert(40);
+				this->moveVert(28);
 				this->animState = PLAYER_ANIMATION_STATES::JUMPING;
 			}
 			cout << "#j: " << jumps;

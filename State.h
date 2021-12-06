@@ -25,7 +25,7 @@ protected:
 	std::stack<State*>* states; // stack of stake pointers
 	RenderWindow* window;
 	std::map<std::string, int>* supportedKeys;
-	std::map<std::string, int> keyBinds;
+	std::map<std::string, int> keybinds;
 	bool quit, paused;
 	float keytime, keytimeMax;
 	float gridSize;
@@ -39,7 +39,7 @@ protected:
 	std::map<std::string, sf::Texture> textures;
 
 	// Init
-	virtual void initKeybinds() = 0;
+	virtual void initkeybinds() = 0;
 
 public:
 	// constructor / destructor

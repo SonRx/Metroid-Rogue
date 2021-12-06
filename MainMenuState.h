@@ -22,7 +22,7 @@ private:
     void initVariables();
     void initBackground();
     void initFonts();
-    void initKeybinds();
+    void initkeybinds();
     void initButtons();
 
 public:

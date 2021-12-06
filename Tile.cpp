@@ -7,7 +7,7 @@ Tile::Tile()
 	this->type = 0;
 }
 
-Tile::Tile(int grid_x, int grid_y, float gridSizeF, const sf::Texture& texture, const sf::IntRect& tex_rect, bool collision, short type)
+Tile::Tile(short type, int grid_x, int grid_y, float gridSizeF, const sf::Texture& texture, const sf::IntRect& tex_rect, const bool collision = false)
 {
 	this->shape.setSize(sf::Vector2f(gridSizeF, gridSizeF));
 	this->shape.setFillColor(sf::Color::White);
@@ -39,14 +39,14 @@ const sf::FloatRect Tile::getGlobalBounds() const
 	return this->shape.getGlobalBounds();
 }
 
-const std::string Tile::getAsString() const
-{
-	std::stringstream ss;
-
-	ss << this->shape.getTextureRect().left << " " << this->shape.getTextureRect().top << " " << this->collision << " " << this->type;
-
-	return ss.str();
-}
+//const std::string Tile::getAsString() const
+//{
+//	std::stringstream ss;
+//
+//	ss << this->type << " " << this->shape.getTextureRect().left << " " << this->shape.getTextureRect().top << " " << this->collision;
+//
+//	return ss.str();
+//}
 
 const sf::Vector2f& Tile::getPosition() const
 {
@@ -69,13 +69,13 @@ const short& Tile::getType() const
 }
 
 // update
-void Tile::update()
-{
-
-}
-
-// Render
-void Tile::render(sf::RenderTarget& target)
-{
-	target.draw(this->shape);
-}
+//void Tile::update()
+//{
+//	//this->shape.setFillColor(sf::Color::Red);
+//}
+//
+//// Render
+//void Tile::render(sf::RenderTarget& target, const sf::Vector2f player_position)
+//{
+//	//target.draw(this->shape);
+//}

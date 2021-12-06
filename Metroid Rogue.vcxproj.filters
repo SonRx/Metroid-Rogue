@@ -31,6 +31,9 @@
     <Filter Include="EnemyAssets">
       <UniqueIdentifier>{47d8a5e3-29eb-498c-aa6d-4448948a799a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="States\edit modes">
+      <UniqueIdentifier>{33685cd7-f5e7-40df-90fd-f831eb080010}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Metroid Rogue.cpp">
@@ -66,9 +69,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Level.cpp">
       <Filter>Map</Filter>
     </ClCompile>
@@ -98,6 +98,24 @@
     </ClCompile>
     <ClCompile Include="MovementComponent.cpp">
       <Filter>EnemyAssets</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawner.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorMode.cpp">
+      <Filter>States\edit modes</Filter>
+    </ClCompile>
+    <ClCompile Include="DefaultEditorMode.cpp">
+      <Filter>States\edit modes</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyEditorMode.cpp">
+      <Filter>States\edit modes</Filter>
+    </ClCompile>
+    <ClCompile Include="Rat.cpp">
+      <Filter>EnemyAssets</Filter>
+    </ClCompile>
+    <ClCompile Include="RegularTile.cpp">
+      <Filter>Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,9 +149,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Level.h">
       <Filter>Map</Filter>
     </ClInclude>
@@ -163,6 +178,24 @@
     </ClInclude>
     <ClInclude Include="MovementComponent.h">
       <Filter>EnemyAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="Spawner.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorMode.h">
+      <Filter>States\edit modes</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultEditorMode.h">
+      <Filter>States\edit modes</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyEditorMode.h">
+      <Filter>States\edit modes</Filter>
+    </ClInclude>
+    <ClInclude Include="Rat.h">
+      <Filter>EnemyAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="RegularTile.h">
+      <Filter>Map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

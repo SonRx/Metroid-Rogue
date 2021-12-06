@@ -2,10 +2,13 @@
 #include "Tile.h"
 #include "Entity.h"
 #include "Player.h"
+#include  "Spawner.h"
+#include "RegularTile.h"
 
 class Tile; // forward declaration
 class Entity;
 class Player;
+class Spawner;
 
 class TileMap
 {
@@ -40,18 +43,20 @@ public:
 	const sf::Vector2i& getMaxSizeGrid() const;
 	const sf::Vector2f& getMaxSizeWorld() const;
 	const bool isTileEmpty(const int x, const int y, const int z) const;
+	const bool checkType(const int x, const int y, const int z, const int type) const;
 
 	// Mutators
 	void addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const bool collision, const short type);
-	void removeTile(const int x, const int y, const int z);
+	void removeTile(const int x, const int y, const int z, const int type = -1);
 
 	// Save Editor to game
 	void saveFile(const std::string file_name);
 	void loadFile(const std::string file_name);
 
 	// update
-	void updateCollision(Entity* entity, const float& dt);
-	void update();
+	//void updateCollision(Entity* entity, const float& dt);
+	void update(Entity* entity, const float& dt);
+	//virtual void update();
 
 	// render
 	void render(RenderTarget& target, const Vector2i& gridPos, const bool show_collision = false);
