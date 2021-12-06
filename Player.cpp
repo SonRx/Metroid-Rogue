@@ -246,7 +246,6 @@ void Player::updateMovement()
 			this->direction = PLAYER_DIRECTION::LEFT;//-1
 
 			this->moveHori(this->direction);
-			this->moveVert(-1.f);
 
 			if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
 				this->animState = PLAYER_ANIMATION_STATES::RUNNING;
@@ -258,7 +257,7 @@ void Player::updateMovement()
 			this->direction = PLAYER_DIRECTION::RIGHT;//1
 
 			this->moveHori(this->direction);
-			this->moveVert(-1.f);
+			
 
 			if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
 				this->animState = PLAYER_ANIMATION_STATES::RUNNING;
@@ -271,7 +270,7 @@ void Player::updateMovement()
 	}
 	if (!(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)))
 	{
-		this->moveVert(-1.f);
+		
 
 		if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
 			this->animState = PLAYER_ANIMATION_STATES::IDLE;
@@ -287,7 +286,7 @@ void Player::updateMovement()
 		{ // STILL WORKING ON THE JUMPING
 			if ((this->jumps <= 2) && canJump) {//decrements the jumps but treats as bool, when zero the player cant jumps anymore
 				this->jumps--;
-				this->moveVert(28);
+				this->moveVert(30);
 				this->animState = PLAYER_ANIMATION_STATES::JUMPING;
 			}
 			cout << "#j: " << jumps;
@@ -297,6 +296,8 @@ void Player::updateMovement()
 		else {
 			canJump = 1;
 		}
+
+		this->moveVert(-2.f);
 }
 
 void Player::updatePlayerCenter()
