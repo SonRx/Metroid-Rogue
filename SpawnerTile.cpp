@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "Spawner.h"
+#include "SpawnerTile.h"
 
 
-Spawner::Spawner(int grid_x, int grid_y, float gridSizeF, const sf::Texture& texture, const sf::IntRect& tex_rect,
+SpawnerTile::SpawnerTile(int grid_x, int grid_y, float gridSizeF, const sf::Texture& texture, const sf::IntRect& tex_rect,
 	 int enemy_type, int enemy_amount, int enemy_time_to_spawn, float enemy_max_distance)
 	: Tile(TileTypes::ENEMYSPAWNER, grid_x, grid_y, gridSizeF, texture, tex_rect, false)
 {
@@ -14,14 +14,15 @@ Spawner::Spawner(int grid_x, int grid_y, float gridSizeF, const sf::Texture& tex
 	this->enemyAmount = enemy_amount;
 	this->enemyTimeToSpawn = enemy_time_to_spawn;
 	this->enemyMaxDistance = enemy_max_distance;
+	this->spawned = false;
 }
 
-Spawner::~Spawner()
+SpawnerTile::~SpawnerTile()
 {
 
 }
 
-const std::string Spawner::getAsString() const
+const std::string SpawnerTile::getAsString() const
 {
 	std::stringstream ss; /* x,y,z,    type    rectx,recty,		enemy type, enemy amount, enemy tts, enemy max distance */
 
@@ -33,16 +34,24 @@ const std::string Spawner::getAsString() const
 	return ss.str();
 }
 
-/* modifiers */
+const bool& SpawnerTile::getSpawned() const
+{
+	return this->spawned;
+}
 
+/* modifiers */
+void SpawnerTile::setSpawned(const bool spawned)
+{
+	this->spawned = spawned;
+}
 
 /* update / render*/
-void Spawner::update()
+void SpawnerTile::update()
 {
 
 }
 
-void Spawner::render(sf::RenderTarget& target)
+void SpawnerTile::render(sf::RenderTarget& target)
 {
 	target.draw(shape);
 }

@@ -99,7 +99,7 @@
     <ClCompile Include="MovementComponent.cpp">
       <Filter>EnemyAssets</Filter>
     </ClCompile>
-    <ClCompile Include="Spawner.cpp">
+    <ClCompile Include="SpawnerTile.cpp">
       <Filter>Map</Filter>
     </ClCompile>
     <ClCompile Include="EditorMode.cpp">
@@ -116,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="RegularTile.cpp">
       <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemySystem.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,7 +182,7 @@
     <ClInclude Include="MovementComponent.h">
       <Filter>EnemyAssets</Filter>
     </ClInclude>
-    <ClInclude Include="Spawner.h">
+    <ClInclude Include="SpawnerTile.h">
       <Filter>Map</Filter>
     </ClInclude>
     <ClInclude Include="EditorMode.h">
@@ -196,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="RegularTile.h">
       <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemySystem.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

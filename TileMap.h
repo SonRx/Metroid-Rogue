@@ -2,13 +2,14 @@
 #include "Tile.h"
 #include "Entity.h"
 #include "Player.h"
-#include  "Spawner.h"
 #include "RegularTile.h"
+#include "EnemySystem.h"
 
 class Tile; // forward declaration
 class Entity;
 class Player;
-class Spawner;
+class SpawnerTile;
+
 
 class TileMap
 {
@@ -46,7 +47,8 @@ public:
 	const bool checkType(const int x, const int y, const int z, const int type) const;
 
 	// Mutators
-	void addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const bool collision, const short type);
+	void addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const bool collision, const short& type);
+	void addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const int enemy_type, const int enemy_am, const int enemy_tts, const int enemy_md);
 	void removeTile(const int x, const int y, const int z, const int type = -1);
 
 	// Save Editor to game
@@ -55,6 +57,9 @@ public:
 
 	// update
 	//void updateCollision(Entity* entity, const float& dt);
+	void updateWorldBoundsCollision(Entity* entity, const float& dt); // check aorund screen
+	void updateTileCollision(Entity* entity, const float& dt);
+	void updateTiles(Entity* entity, const float& dt, EnemySystem& enemySystem);
 	void update(Entity* entity, const float& dt);
 	//virtual void update();
 

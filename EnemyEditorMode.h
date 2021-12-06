@@ -1,6 +1,6 @@
 #pragma once
 #include "EditorMode.h"
-//#include "EnemySpawnerTile.h"
+#include "SpawnerTile.h"
 
 class State;
 class StateData;

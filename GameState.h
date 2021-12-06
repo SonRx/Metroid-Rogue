@@ -2,11 +2,7 @@
 #include "State.h"
 #include "PauseMenu.h"
 #include "TileMap.h"
-#include "Level.h"
 #include "PlayerGUI.h"
-#include "Enemy.h"
-#include "Rat.h"
-
 
 // Forward Declare
 class PauseMenu;
@@ -31,6 +27,7 @@ private:
     // init Enemy
    // Enemy* testEnemy;             // single enemy
     vector<Enemy*> activeEnemies; // multiple enemies
+    EnemySystem* enemySystem;
 
     // init font
     Font font;
@@ -64,8 +61,10 @@ private:
     void initWorld();
     void initGUI();
     void initPlayer();
+    void initEnemySystem();
     void initPlayerGUI();
     void initTileMap();
+   
 
 public:
     GameState(StateData* state_data);
@@ -80,6 +79,7 @@ public:
     void updatePause();
     void updateTileMap(const float& dt);
     void updatePlayer(const float& dt);
+    void updateEnemies(const float& dt);
     void updatePlayerGUI(const float& dt);
     void updateCombat();
     void updateCollision();

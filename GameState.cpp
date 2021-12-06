@@ -82,6 +82,11 @@ void GameState::initPlayer()
 	isOnGround = false;
 }
 
+void GameState::initEnemySystem()
+{
+	this->enemySystem = new EnemySystem(this->activeEnemies, this->textures);
+}
+
 void GameState::initPlayerGUI()
 {
 	this->playerGUI = new PlayerGUI(this->player);
@@ -110,6 +115,7 @@ GameState::GameState(StateData* state_data)
 	this->initWorld();
 	this->initGUI();
 	this->initPlayer();
+	this->initEnemySystem();
 	this->initPlayerGUI();
 	this->initTileMap();
 						//960,540
@@ -128,6 +134,7 @@ GameState::~GameState()
 	delete this->player;
 	delete this->playerGUI;
 	delete this->tileMap;
+	delete this->enemySystem;
 	//delete this->testEnemy;
 
 	for (size_t i = 0; i < this->activeEnemies.size(); i++)
@@ -237,13 +244,17 @@ void GameState::updatePause()
 
 void GameState::updateTileMap(const float& dt) // this replaces update collision in line ~205
 {
-	//this->tileMap->update();
-	this->tileMap->update(this->player, dt);
+	this->tileMap->updateWorldBoundsCollision(this->player,dt);
+	this->tileMap->updateTileCollision(this->player, dt);
+	this->tileMap->updateTiles(this->player, dt, *this->enemySystem);
+	//this->tileMap->update(this->player, dt);
 	//this->tileMap->updateCollision(this->testEnemy, dt);
-	for (auto* i : this->activeEnemies)
-	{
-		this->tileMap->update(i, dt);
-	}
+	//for (auto* i : this->activeEnemies)
+	//{
+	//	this->tileMap->updateWorldBoundsCollision(i, dt);
+	//	this->tileMap->updateTileCollision(i, dt);
+	//	//this->tileMap->updateTiles(i, dt);
+	//}
 }
 
 void GameState::updatePlayer(const float& dt)
@@ -258,6 +269,11 @@ void GameState::updatePlayer(const float& dt)
 	{
 		this->player->gainHP(1);
 	}
+}
+
+void GameState::updateEnemies(const float& dt)
+{
+	//this->activeEnemies.push_back(new Rat(500.f, 200.f, this->textures["RAT1_SHEET"]));
 }
 
 void GameState::updatePlayerGUI(const float& dt)
@@ -322,7 +338,7 @@ void GameState::update(const float& dt)
 		//this->updateCollision(); // updateTileMap(dt) replaced this
 		this->playerGUI->update(dt);
 
-		/*for (auto* i : this->activeEnemies)
+	/*	for (auto* i : this->activeEnemies)
 		{
 			i->update(dt, this->mousePosView);
 		}*/
@@ -366,10 +382,11 @@ void GameState::render(RenderTarget* target)
 
 	this->tileMap->render(this->renderTexture, this->viewGridPos, false); // render tile under player
 
-	/*for (auto* i : this->activeEnemies)
-	{
-		i->render(this->renderTexture, false);
-	}*/
+	//for (auto* i : this->activeEnemies)
+	//{
+	//	i->render(this->renderTexture, false);
+	//}
+
 	this->player->render(this->renderTexture, false); // render player over tile
 
 	//this->testEnemy->render(this->renderTexture, false);

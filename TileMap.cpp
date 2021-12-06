@@ -146,23 +146,23 @@ const bool TileMap::checkType(const int x, const int y, const int z, const int t
 }
 
 // Mutators
-void TileMap::addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const bool collision, const short type)
+void TileMap::addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const bool collision, const short& type)
 {	// three inputs from the mouse position in the grid. Adds a tile to a position of the array
-	if (x < this->maxSizeGrid.x && x >= 0 &&
-		y < this->maxSizeGrid.y && y >= 0 &&
-		z < this->layers && z >= 0)
+	if (x < this->maxSizeGrid.x && x >= 0 && y < this->maxSizeGrid.y && y >= 0 && z < this->layers && z >= 0)
 	{
-			// checks if its okay to add tile
-		if (type == TileTypes::DEFAULT)
-		{
+		// checks if its okay to add tile
+		this->map[x][y][z].push_back(new RegularTile(type, x, y, this->gridSizeF, this->tileSheet, tex_rect, collision));
+		cout << "DEBUG: ADDED TILE!" << endl;
+	}
+}
 
-			this->map[x][y][z].push_back(new RegularTile(type, x, y, this->gridSizeF, this->tileSheet, tex_rect, collision));
-			cout << "DEBUG: ADDED TILE!" << endl;
-		}
-		else if (type == TileTypes::ENEMYSPAWNER)
-		{
-			this->map[x][y][z].push_back(new Spawner(x, y, this->gridSizeF, this->tileSheet, tex_rect, 0,0,0,0));
-		}
+void TileMap::addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, 
+	const int enemy_type, const int enemy_am, const int enemy_tts, const int enemy_md)
+{
+	if (x < this->maxSizeGrid.x && x >= 0 && y < this->maxSizeGrid.y && y >= 0 && z < this->layers && z >= 0)
+	{
+		this->map[x][y][z].push_back(new SpawnerTile(x, y, this->gridSizeF, this->tileSheet, tex_rect, enemy_type, enemy_am, enemy_tts, enemy_md));
+		cout << "DEBUG: ADDED ENEMYSPAWNER TILE!" << endl;
 	}
 }
 
@@ -309,7 +309,7 @@ void TileMap::loadFile(const std::string file_name)
 				int enemy_type = 0, enemy_amount = 0, enemy_tts = 0, enemy_md = 0; // amount, time, max distance
 				in_file >> trX >> trY >> enemy_type >> enemy_amount >> enemy_tts >> enemy_md;
 
-				this->map[x][y][z].push_back(new Spawner(
+				this->map[x][y][z].push_back(new SpawnerTile(
 					x, y, gridSizeF, this->tileSheet, sf::IntRect(trX, trY, this->gridSizeI, this->gridSizeI),enemy_type, enemy_amount, enemy_tts, enemy_md));
 			}
 			else
@@ -328,7 +328,7 @@ void TileMap::loadFile(const std::string file_name)
 	in_file.close();
 }
 
-void TileMap::update(Entity* entity, const float& dt) // VERY IMPORTANT 
+void TileMap::updateWorldBoundsCollision(Entity* entity, const float& dt)
 {
 	/* World Bounds for x */
 	if (entity->getPosition().x < 0.f)
@@ -352,7 +352,103 @@ void TileMap::update(Entity* entity, const float& dt) // VERY IMPORTANT
 		entity->setPosition(entity->getPosition().x, this->maxSizeWorld.y - gridSizeF - entity->getGlobalBounds().height);
 		entity->resetVelocityY();
 	}
+}
 
+void TileMap::updateTileCollision(Entity* entity, const float& dt)
+{
+	/* Tiles */
+	this->layer = 0;
+
+	this->fromX = entity->getGridPosition(this->gridSizeI).x - 20; // - 2 to the left
+	if (this->fromX < 0)
+		this->fromX = 0;
+	else if (this->fromX > this->maxSizeGrid.x)
+		this->fromX = this->maxSizeGrid.x;
+
+	this->toX = entity->getGridPosition(this->gridSizeI).x + 20;
+	if (this->toX < 0)
+		this->toX = 0;
+	else if (this->toX > this->maxSizeGrid.x)
+		this->toX = this->maxSizeGrid.x;
+
+	this->fromY = entity->getGridPosition(this->gridSizeI).y - 12; // - 2 to the left
+	if (this->fromY < 0)
+		this->fromY = 0;
+	else if (this->fromY > this->maxSizeGrid.y)
+		this->fromY = this->maxSizeGrid.y;
+
+	this->toY = entity->getGridPosition(this->gridSizeI).y + 12;
+	if (this->toY < 0)
+		this->toY = 0;
+	else if (this->toY > this->maxSizeGrid.y)
+		this->toY = this->maxSizeGrid.y;
+
+
+
+	for (int x = fromX; x < this->toX; x++)
+	{
+		for (int y = fromY; y < this->toY; y++)
+		{
+			for (size_t k = 0; k < this->map[x][y][this->layer].size(); k++)
+			{
+				FloatRect playerBounds = entity->getGlobalBounds();
+				FloatRect wallBounds = this->map[x][y][this->layer][k]->getGlobalBounds();
+				FloatRect nextPos = entity->getNextPosBounds(dt);
+
+				if (this->map[x][y][this->layer][k]->getCollision() && this->map[x][y][this->layer][k]->intersects(nextPos)) // check intersects w/ player
+				{
+					//std::cout << "collsion" << endl; // when player touches red tiles then print collision
+
+					// Collision of bottom of COLLSION BLOCK
+					if (playerBounds.top < wallBounds.top
+						&& playerBounds.top + playerBounds.height < wallBounds.top + wallBounds.height
+						&& playerBounds.left < wallBounds.left + wallBounds.width
+						&& playerBounds.left + playerBounds.width > wallBounds.left
+						)
+					{
+						entity->resetVelocityY();
+						entity->setPosition(playerBounds.left, wallBounds.top - playerBounds.height);
+					}
+					// collision of top of COLLSION BLOCK
+					else if (playerBounds.top > wallBounds.top
+						&& playerBounds.top + playerBounds.height > wallBounds.top + wallBounds.height
+						&& playerBounds.left < wallBounds.left + wallBounds.width
+						&& playerBounds.left + playerBounds.width > wallBounds.left
+						)
+					{
+						entity->resetVelocityY();
+						entity->setPosition(playerBounds.left, wallBounds.top + wallBounds.height);
+					}
+
+					// collision of right of COLLSION BLOCK
+					if (playerBounds.left <= wallBounds.left + 6.f
+						&& playerBounds.left + playerBounds.width < wallBounds.left + wallBounds.width
+						&& playerBounds.top < wallBounds.top + wallBounds.height
+						&& playerBounds.top + playerBounds.height > wallBounds.top
+						)
+					{
+						entity->resetVelocityX();
+						entity->setPosition(wallBounds.left - playerBounds.width, playerBounds.top);
+					}
+
+					// collision of left of COLLSION BLOCK
+					else if (playerBounds.left >= wallBounds.left + 8.f  // Added 10.f and it suddenly fixed everything about gravity
+						&& playerBounds.left + playerBounds.width > wallBounds.left + wallBounds.width
+						&& playerBounds.top < wallBounds.top + wallBounds.height
+						&& playerBounds.top + playerBounds.height > wallBounds.top
+						)
+					{
+						entity->resetVelocityX();
+						entity->setPosition(wallBounds.left + wallBounds.width, playerBounds.top);
+					}
+				}
+			}
+		}
+	}
+}
+
+void TileMap::updateTiles(Entity* entity, const float& dt, EnemySystem& enemySystem)
+{
 	/* Tiles */
 	this->layer = 0;
 
@@ -390,60 +486,30 @@ void TileMap::update(Entity* entity, const float& dt) // VERY IMPORTANT
 			{
 				this->map[x][y][this->layer][k]->update();
 
-				FloatRect playerBounds = entity->getGlobalBounds();
-				FloatRect wallBounds = this->map[x][y][this->layer][k]->getGlobalBounds();
-				FloatRect nextPos = entity->getNextPosBounds(dt);
-
-				if (this->map[x][y][this->layer][k]->getCollision() && this->map[x][y][this->layer][k]->intersects(nextPos)) // check intersects w/ player
+				if (this->map[x][y][this->layer][k]->getType() == TileTypes::ENEMYSPAWNER)
 				{
-					//std::cout << "collsion" << endl; // when player touches red tiles then print collision
-
-					// Collision of bottom of COLLSION BLOCK
-					if (playerBounds.top < wallBounds.top
-						&& playerBounds.top + playerBounds.height < wallBounds.top + wallBounds.height
-						&& playerBounds.left < wallBounds.left + wallBounds.width
-						&& playerBounds.left + playerBounds.width > wallBounds.left
-						)
+					SpawnerTile* es = dynamic_cast<SpawnerTile*>(this->map[x][y][this->layer][k]);
+					if (es)
 					{
-						entity->resetVelocityY();
-						entity->setPosition(playerBounds.left, wallBounds.top - playerBounds.height);
-					}
-					// collision of top of COLLSION BLOCK
-					else if (playerBounds.top > wallBounds.top
-						&& playerBounds.top + playerBounds.height > wallBounds.top + wallBounds.height
-						&& playerBounds.left < wallBounds.left + wallBounds.width
-						&& playerBounds.left + playerBounds.width > wallBounds.left
-						)
-					{
-						entity->resetVelocityY();
-						entity->setPosition(playerBounds.left, wallBounds.top + wallBounds.height);
-					}
-
-						// collision of right of COLLSION BLOCK
-						if (playerBounds.left <= wallBounds.left + 6.f
-							&& playerBounds.left + playerBounds.width < wallBounds.left + wallBounds.width
-							&& playerBounds.top < wallBounds.top + wallBounds.height
-							&& playerBounds.top + playerBounds.height > wallBounds.top
-							)
+						if (!es->getSpawned())
 						{
-							entity->resetVelocityX();
-							entity->setPosition(wallBounds.left - playerBounds.width, playerBounds.top);
+							enemySystem.createEnemy(RAT, x * this->gridSizeF, y * this->gridSizeF);
 						}
-
-						// collision of left of COLLSION BLOCK
-						else if (playerBounds.left >= wallBounds.left + 6.f  // Added 10.f and it suddenly fixed everything about gravity
-							&& playerBounds.left + playerBounds.width > wallBounds.left + wallBounds.width
-							&& playerBounds.top < wallBounds.top + wallBounds.height
-							&& playerBounds.top + playerBounds.height > wallBounds.top
-							)
+						
+						/*if (es->getSpawnTimer() && es->getEnemyCounter() < es->getEnemyAmount())
 						{
-							entity->resetVelocityX();
-							entity->setPosition(wallBounds.left + wallBounds.width, playerBounds.top);
-						}
+							enemySystem.createEnemy(es->getEnemyType(), x * this->gridSizeF, y * this->gridSizeF, *es);
+						}*/
+					}
 				}
 			}
 		}
 	}
+}
+
+void TileMap::update(Entity* entity, const float& dt) // VERY IMPORTANT 
+{
+
 } 
 
 // Update / Render
