@@ -74,6 +74,12 @@ void GameState::initWorld()
 
 void GameState::initGUI()
 {
+	this->gameOverText.setFont(this->font);
+	this->gameOverText.setCharacterSize(50);
+	this->gameOverText.setFillColor(sf::Color::Red);
+	this->gameOverText.setString("YOU DIED");
+	this->gameOverText.setPosition(this->window->getSize().x / 2.f - this->gameOverText.getGlobalBounds().width / 2.f,
+		this->window->getSize().y / 2.f - this->gameOverText.getGlobalBounds().height / 2.f); // dynamic centering trick
 }
 
 void GameState::initPlayer()
@@ -99,7 +105,7 @@ void GameState::initTileMap()
 	//this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
 	//this->tileMap->loadFile("text.slmp");
 
-	this->tileMap = new TileMap("text3.slmp");
+	this->tileMap = new TileMap("text4.slmp");
 }
 
 // constructor / destructor
@@ -269,6 +275,8 @@ void GameState::updatePlayer(const float& dt)
 	{
 		this->player->gainHP(1);
 	}
+
+	//if (this->player->getPosition() == )
 }
 
 void GameState::updateEnemies(const float& dt)
@@ -322,35 +330,38 @@ void GameState::updateCollision()
 
 void GameState::update(const float& dt)
 {
-	this->updateMousePositions(&this->view);
-	this->updateKeyTime(dt);
-	this->updateInput(dt);
-
-	if (!this->paused) // pause game state
+	if (this->player->getSkills()->hp > 0)
 	{
-		std::cout << "\r\t\t\t\t\t\t\t Currently in Game State";
-		this->updateView(dt);
+		this->updateMousePositions(&this->view);
+		this->updateKeyTime(dt);
+		this->updateInput(dt);
 
-		this->updateTileMap(dt); // tile collision
-		this->updatePlayerInput(dt);
-		this->updatePlayer(dt);
-		this->updateCombat();
-		//this->updateCollision(); // updateTileMap(dt) replaced this
-		this->playerGUI->update(dt);
-
-	/*	for (auto* i : this->activeEnemies)
+		if (!this->paused) // pause game state
 		{
-			i->update(dt, this->mousePosView);
-		}*/
+			std::cout << "\r\t\t\t\t\t\t\t Currently in Game State";
+			this->updateView(dt);
 
-		//this->testEnemy->update(dt,this->mousePosView);
-		//this->testEnemy->move(1.f, 0.f, dt);
-		
-	}
-	else // update pause menu
-	{
-		this->menu->update(this->mousePosWindow);
-		this->updatePause();
+			this->updateTileMap(dt); // tile collision
+			this->updatePlayerInput(dt);
+			this->updatePlayer(dt);
+			this->updateCombat();
+			//this->updateCollision(); // updateTileMap(dt) replaced this
+			this->playerGUI->update(dt);
+
+			/*	for (auto* i : this->activeEnemies)
+				{
+					i->update(dt, this->mousePosView);
+				}*/
+
+				//this->testEnemy->update(dt,this->mousePosView);
+				//this->testEnemy->move(1.f, 0.f, dt);
+
+		}
+		else // update pause menu
+		{
+			this->menu->update(this->mousePosWindow);
+			this->updatePause();
+		}
 	}
 }
 
@@ -409,5 +420,12 @@ void GameState::render(RenderTarget* target)
 	this->renderSprite.setTexture(this->renderTexture.getTexture());
 	target->draw(this->renderSprite);
 	//this->renderWorld(); // just the bg
+
+	// game over screen
+	if (this->player->getSkills()->hp <= 0)
+	{
+		this->window->clear();
+		this->window->draw(this->gameOverText);
+	}
 	
 }

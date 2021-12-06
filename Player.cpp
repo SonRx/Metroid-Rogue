@@ -43,7 +43,7 @@ void Player::initSprite()
 	this->sprite.setScale(3.f, 3.f);
 
 	//this->sprite.setPosition(960,540);
-	this->sprite.setPosition(400, 1000);
+	this->sprite.setPosition(200, 5000); // player spawn
 }
 
 void Player::initAnimations()
@@ -98,6 +98,11 @@ const bool& Player::getAnimSwitch()
 Skills* Player::getSkills()
 {
 	return this->skills;
+}
+
+const int& Player::getHpMax() const
+{
+	//return this->hpMax;
 }
 
 const bool Player::getKeytime()
@@ -246,7 +251,7 @@ void Player::updateMovement()
 			this->direction = PLAYER_DIRECTION::LEFT;//-1
 
 			this->moveHori(this->direction);
-			this->moveVert(-1.f);
+			//this->moveVert(-1.f);
 
 			if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
 				this->animState = PLAYER_ANIMATION_STATES::RUNNING;
@@ -258,7 +263,7 @@ void Player::updateMovement()
 			this->direction = PLAYER_DIRECTION::RIGHT;//1
 
 			this->moveHori(this->direction);
-			this->moveVert(-1.f);
+			//this->moveVert(-1.f);
 
 			if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
 				this->animState = PLAYER_ANIMATION_STATES::RUNNING;
@@ -271,7 +276,7 @@ void Player::updateMovement()
 	}
 	if (!(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)))
 	{
-		this->moveVert(-1.f);
+		//this->moveVert(-1.f);
 
 		if (this->animState != PLAYER_ANIMATION_STATES::JUMPING)
 			this->animState = PLAYER_ANIMATION_STATES::IDLE;
@@ -287,7 +292,7 @@ void Player::updateMovement()
 		{ // STILL WORKING ON THE JUMPING
 			if ((this->jumps <= 2) && canJump) {//decrements the jumps but treats as bool, when zero the player cant jumps anymore
 				this->jumps--;
-				this->moveVert(28);
+				this->moveVert(30);
 				this->animState = PLAYER_ANIMATION_STATES::JUMPING;
 			}
 			cout << "#j: " << jumps;
@@ -297,6 +302,8 @@ void Player::updateMovement()
 		else {
 			canJump = 1;
 		}
+
+		this->moveVert(-1.f);
 }
 
 void Player::updatePlayerCenter()

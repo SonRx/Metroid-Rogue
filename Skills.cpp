@@ -9,7 +9,7 @@ Skills::Skills(int level)
 	this->expN = static_cast<int>((50/3) * (pow(this->level + 1, 3) - 6 * pow(this->level + 1,2) + ((this->level + 1) * 17) - 12));
 	this->skillPoints = 2;
 
-	this->vit = 1;
+	this->vit = 100;
 	this->str = 1;
 	this->dex = 1;
 	this->agility = 1;

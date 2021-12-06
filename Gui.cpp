@@ -409,11 +409,11 @@ gui::ProgressBar::~ProgressBar()
 
 void gui::ProgressBar::update(const int current_value, const int max_value)
 {
-	float percent = static_cast<float>(current_value) * 27.3f / static_cast<float>(max_value);
+	float percent = static_cast<float>(current_value) / static_cast<float>(max_value); // 27.3
 
 	this->inner.setSize(
 		sf::Vector2f(
-			static_cast<float>(std::floor(max_value * percent)),
+			static_cast<float>(std::floor(max_value* .30 * percent)),
 			this->inner.getSize().y
 		)
 	);

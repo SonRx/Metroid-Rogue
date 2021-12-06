@@ -78,7 +78,8 @@ void EditorState::initButtons()
 
 void EditorState::initTileMap()
 {
-	this->tileMap = new TileMap(this->stateData->gridSize, 160, 40, "Textures/tile_castle.png");  // text2 is 40 40
+	//this->tileMap = new TileMap(this->stateData->gridSize, 160, 40, "Textures/tile_castle.png");  // text2 is 40 40
+	this->tileMap = new TileMap(this->stateData->gridSize, 160, 160, "Textures/Assets.png");
 	//this->tileMap = new TileMap(this->stateData->gridSize, 400, 100, "Textures/tile_castle.png");
 }
 
@@ -212,12 +213,12 @@ void EditorState::updatePause()
 		this->endState();
 
 	if (this->menu->isButtonPressed("SAVE")) {
-		this->tileMap->saveFile("text3.slmp"); // Save to this file -> located in explorer
+		this->tileMap->saveFile("text4.slmp"); // Save to this file -> located in explorer
 		//this->tileMap->saveFile("text4.slmp");
 	}
 
 	if (this->menu->isButtonPressed("LOAD")) {
-		this->tileMap->loadFile("text3.slmp"); // loads this file into the game
+		this->tileMap->loadFile("text4.slmp"); // loads this file into the game
 		//this->tileMap->loadFile("text4.slmp");
 	}
 }

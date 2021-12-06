@@ -31,6 +31,7 @@ private:
 
     // init font
     Font font;
+    sf::Text gameOverText;
 
     // init pause menu
     PauseMenu* menu;

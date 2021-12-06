@@ -10,6 +10,11 @@ void Entity::initVariables()
 	this->movementSpeed = 100.f;
 }
 
+Skills* Entity::getSkills()
+{
+	return this->skills;;
+}
+
 Entity::Entity()
 {
 	this->initVariables();

@@ -77,6 +77,8 @@ public:
 	const bool& getCanJump() const { return this->canJump; }
 	Skills* getSkills();
 
+	const int& getHpMax() const;
+
 	const bool getKeytime();
 	const bool getJumpTime();
 	virtual void updateKeyTime(const float& dt);

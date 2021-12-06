@@ -31,6 +31,8 @@ protected: // child class can access any member here
 	MovementComponent* movementComponent;
 	AnimationComponent* animationComponent;
 
+	
+
 	//RectangleShape shape;
 	float movementSpeed;
 
@@ -54,6 +56,8 @@ public:
 
 	virtual MovementComponent* getMovementComponent();
 	virtual AnimationComponent* getAnimationComponent();
+
+	Skills* getSkills();
 
 
 	//mutators

@@ -244,7 +244,7 @@ const sf::RenderWindow* Game::getWindow() const
 
 void Game::runApplication()
 {
-	while (this->window->isOpen()) // modify soon to create a main menu.
+	while (this->window->isOpen())  // modify soon to create a main menu.
 	{ // create object -> update it, render it. 
 		updateDt();
 		update(); // see game.cpp for all updates

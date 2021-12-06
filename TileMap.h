@@ -18,6 +18,10 @@ private:
 	int gridSizeI;		// int
 	unsigned layers;
 
+	// player
+	Player* player;
+
+
 	sf::Vector2i maxSizeGrid; // of the grid
 	sf::Vector2f maxSizeWorld; // of the world
 
@@ -31,6 +35,8 @@ private:
 
 	// Culling
 	int fromX, toX, fromY, toY, layer;
+
+	float keytime, keytimeMax;
 	void clear();
 
 public:
@@ -45,6 +51,9 @@ public:
 	const sf::Vector2f& getMaxSizeWorld() const;
 	const bool isTileEmpty(const int x, const int y, const int z) const;
 	const bool checkType(const int x, const int y, const int z, const int type) const;
+
+	const bool getKeytime();
+	void updateKeyTime(const float& dt);
 
 	// Mutators
 	void addTile(const int x, const int y, const int z, const sf::IntRect& tex_rect, const bool collision, const short& type);

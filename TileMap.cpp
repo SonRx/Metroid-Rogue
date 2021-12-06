@@ -50,6 +50,9 @@ TileMap::TileMap(float gridSize, int width, int height, std::string texture_file
 	this->toY = 0;
 	this->layer = 0;
 
+	this->keytime = 0.f;
+	this->keytimeMax = 400.f;
+
 	this->map.resize(this->maxSizeGrid.x, std::vector< vector< vector<Tile*> > >());
 	for (int x = 0; x < this->maxSizeGrid.x; x++)
 	{
@@ -143,6 +146,22 @@ const bool TileMap::checkType(const int x, const int y, const int z, const int t
 {
 	return this->map[x][y][this->layer].back()->getType() == type;
 	// return item from the top.
+}
+
+const bool TileMap::getKeytime()
+{
+	if (this->keytime >= this->keytimeMax)
+	{
+		this->keytime = 0.f;
+		return true;
+	}
+	return false;
+}
+
+void TileMap::updateKeyTime(const float& dt)
+{
+	if (this->keytime < this->keytimeMax)
+		this->keytime += 1.f * dt;
 }
 
 // Mutators
@@ -383,8 +402,6 @@ void TileMap::updateTileCollision(Entity* entity, const float& dt)
 	else if (this->toY > this->maxSizeGrid.y)
 		this->toY = this->maxSizeGrid.y;
 
-
-
 	for (int x = fromX; x < this->toX; x++)
 	{
 		for (int y = fromY; y < this->toY; y++)
@@ -421,7 +438,7 @@ void TileMap::updateTileCollision(Entity* entity, const float& dt)
 					}
 
 					// collision of right of COLLSION BLOCK
-					if (playerBounds.left <= wallBounds.left + 6.f
+					if (playerBounds.left < wallBounds.left + 6.f
 						&& playerBounds.left + playerBounds.width < wallBounds.left + wallBounds.width
 						&& playerBounds.top < wallBounds.top + wallBounds.height
 						&& playerBounds.top + playerBounds.height > wallBounds.top
@@ -432,7 +449,7 @@ void TileMap::updateTileCollision(Entity* entity, const float& dt)
 					}
 
 					// collision of left of COLLSION BLOCK
-					else if (playerBounds.left >= wallBounds.left + 8.f  // Added 10.f and it suddenly fixed everything about gravity
+					else if (playerBounds.left > wallBounds.left + 8.f  // Added 10.f and it suddenly fixed everything about gravity
 						&& playerBounds.left + playerBounds.width > wallBounds.left + wallBounds.width
 						&& playerBounds.top < wallBounds.top + wallBounds.height
 						&& playerBounds.top + playerBounds.height > wallBounds.top
@@ -440,6 +457,34 @@ void TileMap::updateTileCollision(Entity* entity, const float& dt)
 					{
 						entity->resetVelocityX();
 						entity->setPosition(wallBounds.left + wallBounds.width, playerBounds.top);
+					}
+				}
+
+				if (this->map[x][y][this->layer][k]->getType() == TileTypes::DAMAGING && this->map[x][y][this->layer][k]->intersects(nextPos)) // check intersects w/ player
+				{
+					// Collision of bottom of COLLSION BLOCK
+					if (playerBounds.top < wallBounds.top
+						&& playerBounds.top + playerBounds.height < wallBounds.top + wallBounds.height
+						&& playerBounds.left < wallBounds.left + wallBounds.width
+						&& playerBounds.left + playerBounds.width > wallBounds.left
+						)
+					{
+						entity->resetVelocityY();
+						entity->setPosition(playerBounds.left, wallBounds.top - playerBounds.height);
+						if (this->map[x][y][this->layer][k]->getType() == TileTypes::DAMAGING && getKeytime())
+							entity->getSkills()->loseHP(1);
+					}
+					// Collision of bottom of COLLSION BLOCK
+					if (playerBounds.top < wallBounds.top
+						&& playerBounds.top + playerBounds.height < wallBounds.top + wallBounds.height
+						&& playerBounds.left < wallBounds.left + wallBounds.width
+						&& playerBounds.left + playerBounds.width > wallBounds.left
+						)
+					{
+						entity->resetVelocityY();
+						entity->setPosition(playerBounds.left, wallBounds.top - playerBounds.height);
+						if (this->map[x][y][this->layer][k]->getType() == TileTypes::DAMAGING && getKeytime())
+							entity->getSkills()->loseHP(1);
 					}
 				}
 			}
@@ -486,22 +531,25 @@ void TileMap::updateTiles(Entity* entity, const float& dt, EnemySystem& enemySys
 			{
 				this->map[x][y][this->layer][k]->update();
 
-				if (this->map[x][y][this->layer][k]->getType() == TileTypes::ENEMYSPAWNER)
-				{
-					SpawnerTile* es = dynamic_cast<SpawnerTile*>(this->map[x][y][this->layer][k]);
-					if (es)
-					{
-						if (!es->getSpawned())
-						{
-							enemySystem.createEnemy(RAT, x * this->gridSizeF, y * this->gridSizeF);
-						}
-						
-						/*if (es->getSpawnTimer() && es->getEnemyCounter() < es->getEnemyAmount())
-						{
-							enemySystem.createEnemy(es->getEnemyType(), x * this->gridSizeF, y * this->gridSizeF, *es);
-						}*/
-					}
-				}
+				//if (this->map[x][y][this->layer][k]->getType() == TileTypes::ENEMYSPAWNER)
+				//{
+				//	SpawnerTile* es = dynamic_cast<SpawnerTile*>(this->map[x][y][this->layer][k]);
+				//	if (es)
+				//	{
+				//		if (!es->getSpawned())
+				//		{
+				//			enemySystem.createEnemy(RAT, x * this->gridSizeF, y * this->gridSizeF);
+				//		}
+
+				//		/*if (es->getSpawnTimer() && es->getEnemyCounter() < es->getEnemyAmount())
+				//		{
+				//			enemySystem.createEnemy(es->getEnemyType(), x * this->gridSizeF, y * this->gridSizeF, *es);
+				//		}*/
+				//	}
+				//}
+				
+				this->updateKeyTime(dt);
+
 			}
 		}
 	}
@@ -521,13 +569,13 @@ void TileMap::render(sf::RenderTarget& target, const Vector2i& gridPos, const bo
 {
 	this->layer = 0;
 
-	this->fromX = gridPos.x - 20; // - 2 to the left
+	this->fromX = gridPos.x - 28; // - 2 to the left
 	if (this->fromX < 0)
 		this->fromX = 0;
 	else if (this->fromX > this->maxSizeGrid.x)
 		this->fromX = this->maxSizeGrid.x;
 
-	this->toX = gridPos.x + 20;
+	this->toX = gridPos.x + 28;
 	if (this->toX < 0)
 		this->toX = 0;
 	else if (this->toX > this->maxSizeGrid.x)
@@ -565,6 +613,11 @@ void TileMap::render(sf::RenderTarget& target, const Vector2i& gridPos, const bo
 						this->collisionBox.setPosition(this->map[x][y][this->layer][k]->getPosition());
 						target.draw(this->collisionBox);
 					}
+				}
+				if (this->map[x][y][this->layer][k]->getType() == TileTypes::DAMAGING)
+				{
+					this->collisionBox.setPosition(this->map[x][y][this->layer][k]->getPosition());
+					target.draw(this->collisionBox);
 				}
 				if (this->map[x][y][this->layer][k]->getType() == TileTypes::ENEMYSPAWNER)
 				{
